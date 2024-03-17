@@ -185,7 +185,79 @@ public class Package {
 
 	
 	
-
+   static ArrayList<String> NewClassNames(String Line){
+		ArrayList<String> List  =new ArrayList<String>();
+		String Patterne;
+		String line = Line;
+		int BI = 0;
+		int Case = 0;
+		int BS = 0;
+		line = line.trim();
+		line = line.replaceAll(" ","");
+		line = line.substring(0,line.indexOf("="));
+		while(line.contains("<") ||  line.contains(">") || line.contains("[") ||  line.contains("]")) {
+			//System.out.println("Inside While");
+			if(line.contains("<")) {
+				BI= line.indexOf("<");
+				Case =1;
+			}
+			else if(line.contains("[")) {
+             BI = line.indexOf("[");
+             Case= 2;
+		}   
+			//System.out.println(BI);
+			List.add(Line.substring(0,BI));
+			//System.out.println(List);
+			
+		    if(Case ==1) {
+		    	BS = line.lastIndexOf(">");
+		    }
+		    else if (Case == 2) {
+		    	BS = line.lastIndexOf("]");
+		    }
+		    //System.out.println(BS);
+		    Patterne = line.substring(BI+1,BS);
+		    line = line.substring(0, BI) + line.substring(BS + 1);
+		    System.out.println(line);
+		    
+		    
+		    System.out.println(Patterne);
+		    while(Patterne.contains("<") ||  Patterne.contains(">") || Patterne.contains("]")  || Patterne.contains("[") || Patterne.contains(",")) {
+		    	if(Patterne.contains("<")) {
+		    		BI= Patterne.indexOf("<");
+					Case =1;
+		    	}
+		    	else if (Patterne.contains("[")) {
+		    		BI= Patterne.indexOf("[");
+					Case =2;
+		    	}
+		    	else if(Patterne.contains(",")) {
+		    		BI = Patterne.indexOf(",");
+		    		Case = 3;
+		    	}
+		    	if(Case == 3) {
+		    	List.add(Patterne.substring(0,BI));
+		    	List.add(Patterne.substring(BI+1));
+		    	Patterne = Patterne.substring(0,BI) + Patterne.substring(BI+1);
+		    	}
+		    	else {
+		    	 if(Case ==1) {
+				    	BS = Patterne.lastIndexOf(">");
+				    }
+				    else if (Case == 2) {
+				    	BS = Patterne.lastIndexOf("]");
+				    }
+		    	  List.add(Patterne.substring(BI+1,BS));
+		    	  Patterne = Patterne.replaceAll(Pattern.quote(Patterne.substring(BI,BS+1)),"");
+		    	}
+		    	}
+		    line = line.replaceAll(Pattern.quote(Patterne),"");
+			
+		}
+		             
+		
+		return List;
+	}
 	
 	static ArrayList<ImportStatus> ImportStatusUpdate(File file, ArrayList<ImportStatus> ListImport) {
 	    String Line;
