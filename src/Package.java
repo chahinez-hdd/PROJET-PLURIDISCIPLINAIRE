@@ -10,9 +10,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+
+//TODO
+/* Methode To Fetch ClassName
+ * Methode To Fetch Comment
+ * 
+ */
 
 
 public class Package {
@@ -25,7 +32,6 @@ public class Package {
 	
 	
 	static void PrintFileNumberLine(ArrayList<Package> List) {
-		
 		for(Package index : List) {
 			System.out.println("Package "+index.PackageName);
 			if(index.FileList.isEmpty()) {
@@ -101,71 +107,97 @@ public class Package {
 	}
 	
 	
-        static boolean IsComments(String Line) {
+	static String RemoveComment(String Line) {
+		 String line = Line;
+	     int index = line.indexOf("\\\\");
+	     line = line.substring(0,index);
+			return line;
+	 } 
+	
+	 static boolean ContainsComment(String Line) {
+		 boolean b = false;
+		 String line = Line;
+		 if(IsQoute(line)) {
+			 line = RemoveQoute(line);
+		 }
+		 if(line.contains("\\\\") ) {
+			 b = true;
+		 }
+		 return b;
+	 }
+	 
+   static boolean IsComments(String Line) {
        
-        	boolean b  = false;
-        	if(Line.startsWith("//") || Line.startsWith("/*") || Line.startsWith("*")||Line.startsWith("*/")) {
-        		b = true;
-        	}
-        	
-        	return b;
-        }
-        
-        static boolean IsQoute(String Line) {
-        	boolean b = false;
-        	if(Line.contains("\"")) {
-        		b = true;
-        	}
-        	
-        	return b;
-        }
-        
-        static String RemoveQoute(String Line) {
-        	String line = Line;
-        	String qoute;
-        	while(line.contains("\"")) {	
-        	int index  = line.indexOf("\"");
-        		 qoute = line.substring(index);
-        		index = line.indexOf("\"");
-        		qoute = line.substring(0,index+1);
-        		line.replaceAll(qoute,"");
-        	}
-        		return line;
-        	
-        }
-        
-        static boolean IsNew(String Line) {
-        	boolean b  = false;
-        	String line = Line;
-        	if(IsQoute(Line))
-        	{
-        		 Line = RemoveQoute(line);
-        	}	
-        	if(Line.replaceAll(" ","").contains("=new")) {
-        		b = true;
-        	}
-        	
-        	
-        	
-        	return b;
-        }
+   	boolean b  = false;
+   	if(Line.startsWith("//") || Line.startsWith("/*") || Line.startsWith("*")||Line.startsWith("*/")) {
+   		b = true;
+   	}
+   	
+   	return b;
+   }
+   
+   static boolean IsQoute(String Line) {
+   	boolean b = false;
+   	if(Line.contains("\"")) {
+   		b = true;
+   	}
+   	
+   	return b;
+   }
+   
+   static String RemoveQoute(String Line) {
+   	String line = Line;
+   	String qoute;
+   	while(line.contains("\"")) {
+    
+   		int BI = line.indexOf("\"");
+   		 int BS = line.indexOf("\"",BI+1);
+   		 qoute = line.substring(BI,BS+1);
+   		
+   		 line = line.replaceAll(Pattern.quote(qoute), "");
+   		
+   		
+   	}
+   	
+   		return line;
+   	
+   }
+   
+   static boolean IsNew(String Line) {
+   	boolean b  = false;
+   	String line = Line;
+   	if(IsQoute(Line))
+   	{
+   	
+   		 line = RemoveQoute(Line);
+   		 
+   		 
+   	}	
+   	if(line.replaceAll(" ","").contains("=new")) {
+   		
+   		b = true;
+   	}
+   	
+   	
+   	
+   	return b;
+   }
+
+	
+	
+
 	
 	static ArrayList<ImportStatus> ImportStatusUpdate(File file, ArrayList<ImportStatus> ListImport) {
 	    String Line;
 	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	        while ((Line = reader.readLine()) != null) {
-	        	Line = Line.trim();
-	            if (!Line.startsWith("import") && !IsComments(Line) ) {
+	            if (!Line.trim().contains("import")) {
 	                for (ImportStatus index : ListImport) {
 	                    if (!index.ImportName.contains("*")) {
 	                        int LastIndex = index.ImportName.lastIndexOf(".");
-	                        if (IsNew(Line)) {
-	                             int IndexNew = Line.lastIndexOf("new ");
-	                             int IndexPar = Line.lastIndexOf("(");
-	                             if(Line.substring(IndexNew+1,IndexPar).equals(index.ImportName.substring(LastIndex+1))) {
-	                            	 index.ImportStatus = 1;
-	                             }
-	                          
+	                        if (Line.contains(index.ImportName.substring(LastIndex + 1))) {
+	                 
+	                            index.ImportStatus = 1;
 	                        }
 	                    } else {
 	                        String JdkPath = "C:\\Users\\DELL\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-17.0.8.101-hotspot\\lib\\src.zip";
@@ -192,8 +224,8 @@ public class Package {
 	                            if (!SubFile.isEmpty()) {
 	                                for (String javaClass : SubFile) {
 	                                    if (Line.contains(javaClass)) {
-	                                    	System.out.println(index.ImportName);
-	                                    	System.out.println(javaClass);
+	                                    	//System.out.println(index.ImportName);
+	                                    	//System.out.println(javaClass);
 	                                        index.ImportStatus = 1;
 	                                    }
 	                                }
@@ -204,8 +236,8 @@ public class Package {
 	                                    File[] filename = idk.listFiles();
 	                                    for (File idk2 : filename) {
 	                                        if (Line.contains(idk2.getName().replace(".java", ""))) {
-	                                        	System.out.println(index.ImportName);
-	                                        	System.out.println(idk2.getName().replace(".java", ""));
+	                                        //	System.out.println(index.ImportName);
+	                                        	//System.out.println(idk2.getName().replace(".java", ""));
 	                                            index.ImportStatus = 1;
 	                                        }
 	                                    }
@@ -218,7 +250,7 @@ public class Package {
 	            }
 
 	        }
-	    } catch ( IOException e) {
+	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
 	    return ListImport;
