@@ -187,6 +187,23 @@ public class Package {
 	
    static ArrayList<String> NewClassNames(String Line){
 		ArrayList<String> List  =new ArrayList<String>();
+		String line = Line.trim();
+		line = line.substring(line.indexOf("=")+1);
+		line  = line.replaceAll(" ", "");
+		int BI;
+		int BS;
+		while(line.contains("new")) {
+			BI = line.indexOf("new")+3;
+			BS = line.indexOf("(");
+			List.add(line.substring(BI,BS));
+			line = line.replaceAll(Pattern.quote(line.substring(BI-3,BS+1)), "");
+		}
+		
+		return List;
+	}
+	
+	static ArrayList<String> NewClassNamesCollection(String Line){
+		ArrayList<String> List  =new ArrayList<String>();
 		String Patterne;
 		String line = Line;
 		int BI = 0;
@@ -236,16 +253,17 @@ public class Package {
 		    		Case = 3;
 		    	}
 		    	if(Case == 3) {
+		    		
 		    	List.add(Patterne.substring(0,BI));
 		    	List.add(Patterne.substring(BI+1));
 		    	Patterne = Patterne.substring(0,BI) + Patterne.substring(BI+1);
 		    	}
 		    	else {
 		    	 if(Case ==1) {
-				    	BS = Patterne.lastIndexOf(">");
+				    	BS = Patterne.indexOf(">");
 				    }
 				    else if (Case == 2) {
-				    	BS = Patterne.lastIndexOf("]");
+				    	BS = Patterne.indexOf("]");
 				    }
 		    	  List.add(Patterne.substring(BI+1,BS));
 		    	  Patterne = Patterne.replaceAll(Pattern.quote(Patterne.substring(BI,BS+1)),"");
@@ -258,6 +276,7 @@ public class Package {
 		
 		return List;
 	}
+	
 	
 	static ArrayList<ImportStatus> ImportStatusUpdate(File file, ArrayList<ImportStatus> ListImport) {
 	    String Line;
