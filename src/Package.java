@@ -173,7 +173,7 @@ public class Package {
    		 
    		 
    	}	
-   	if(line.replaceAll(" ","").contains("=new")) {
+   	if(line.replaceAll(" ","").contains("=new") || line.replaceAll(" ", "").contains("(new")) {
    		
    		b = true;
    	}
@@ -182,19 +182,81 @@ public class Package {
    	
    	return b;
    }
-
 	
 	
-   static ArrayList<String> NewClassNames(String Line){
+	static String ThrowsException(String Line) {
+		String line = Line.trim();
+		int BI = line.indexOf("throws")+6;
+		line = line.substring(BI);
+		line = line.trim();
+		line = line.replaceAll(" ", "");
+		int BS = 0;
+		if(line.contains("{")) {
+		 BS = line.indexOf("{");
+		 return line.substring(0,BS).replaceAll(" ", "");
+		}
+		else {
+			return line.replaceAll(" ", "");
+		}
+		
+	}
+	
+	
+	static String ThrowException(String Line) {
+		String line = Line.trim();
+		int BI = line.indexOf("new")+3;
+		line = line.substring(BI);
+		line = line.trim();
+		line = line.replaceAll(" ", "");
+		int BS = line.indexOf("(");
+		return line.substring(0,BS);
+	}
+	
+	static String CatchException(String Line) {
+		String line = Line;
+		line = line.trim();
+		int BI = line.indexOf("(")+1;
+		line = line.substring(BI);
+		line = line.trim();
+		int BS = line.indexOf(" ");
+		return line.substring(0,BS);
+	}
+	
+	static Boolean IsThrows(String Line) {
+		String line = Line;
+		line = line.replaceAll(" ","");
+		return line.substring(line.lastIndexOf(")")).contains("throws");
+	}
+	
+	static Boolean IsThrow(String Line) {
+		String line = Line;
+		line = line.replaceAll(" ","");
+		line = line.trim();
+		return line.startsWith("throw");
+	}
+	
+	
+  static Boolean IsCatch(String Line) {
+	   String line = Line;
+	   line = line.replaceAll(" ","");
+		line = line.trim();
+		return line.startsWith("catch");
+  }
+	
+	static ArrayList<String> NewClassNames(String Line){
 		ArrayList<String> List  =new ArrayList<String>();
 		String line = Line.trim();
-		line = line.substring(line.indexOf("=")+1);
+		//line = line.substring(line.indexOf("=")+1);
 		line  = line.replaceAll(" ", "");
 		int BI;
 		int BS;
 		while(line.contains("new")) {
+			line = line.substring(line.indexOf("new"));
 			BI = line.indexOf("new")+3;
 			BS = line.indexOf("(");
+			System.out.println(line);
+			System.out.println(BI);
+			System.out.println(BS);
 			List.add(line.substring(BI,BS));
 			line = line.replaceAll(Pattern.quote(line.substring(BI-3,BS+1)), "");
 		}
@@ -212,6 +274,7 @@ public class Package {
 		line = line.trim();
 		line = line.replaceAll(" ","");
 		line = line.substring(0,line.indexOf("="));
+		System.out.println(line);
 		while(line.contains("<") ||  line.contains(">") || line.contains("[") ||  line.contains("]")) {
 			//System.out.println("Inside While");
 			if(line.contains("<")) {
@@ -223,7 +286,7 @@ public class Package {
              Case= 2;
 		}   
 			//System.out.println(BI);
-			List.add(Line.substring(0,BI));
+			List.add(line.substring(0,BI));
 			//System.out.println(List);
 			
 		    if(Case ==1) {
@@ -239,7 +302,7 @@ public class Package {
 		    
 		    
 		    System.out.println(Patterne);
-		    while(Patterne.contains("<") ||  Patterne.contains(">") || Patterne.contains("]")  || Patterne.contains("[") || Patterne.contains(",")) {
+		    while( Patterne.contains("<") ||  Patterne.contains(">") || Patterne.contains("]")  || Patterne.contains("[") || Patterne.contains(",")) {
 		    	if(Patterne.contains("<")) {
 		    		BI= Patterne.indexOf("<");
 					Case =1;
