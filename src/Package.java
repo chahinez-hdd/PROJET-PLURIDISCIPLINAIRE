@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -63,13 +63,32 @@ public class Package {
 		
 	}
 	
+	
+	static boolean IsMethode(String Line) {
+		String trimmedLine = Line.trim();
+	    return trimmedLine.matches("\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\)\\s*(;|\\{)?\\s*");
+	}
+	
+	static boolean IsBracket(String Line) {
+		String line = Line.trim();
+		return line.startsWith("{") || line.startsWith("}");
+	}
+	
 	static int CountLines(File file) {
 		int NbLine = 0;
 		String Line;
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
-	            	if(!Line.isEmpty()) {
-	            	NbLine++;
+	            	if(!Line.isEmpty() && !IsComments(Line)) {
+	            	if(IsQoute(Line)) {
+	            		Line = RemoveQoute(Line);
+	            	}
+	            	if(ContainsComment(Line)) {
+	            		Line = RemoveComment(Line);
+	            	}
+	                if(!IsBracket(Line)) {          	
+	                	++NbLine;
+	                }
 	            	}
 	            }
 	        } catch (IOException e) {
@@ -149,11 +168,14 @@ public class Package {
    	String line = Line;
    	String qoute;
    	while(line.contains("\"")) {
-    
+             
    		int BI = line.indexOf("\"");
    		 int BS = line.indexOf("\"",BI+1);
-   		 qoute = line.substring(BI,BS+1);
-   		
+   		  if (BS == -1) {
+   			  line = line.replace("\"", "");// Check if the closing quote was found
+   	            break; // Exit the loop if not found to avoid StringIndexOutOfBoundsException
+   	        }
+   		  qoute = line.substring(BI,BS+1);
    		 line = line.replaceAll(Pattern.quote(qoute), "");
    		
    		
@@ -162,6 +184,7 @@ public class Package {
    		return line;
    	
    }
+   
    
    static boolean IsNew(String Line) {
    	boolean b  = false;
@@ -225,7 +248,12 @@ public class Package {
 	static Boolean IsThrows(String Line) {
 		String line = Line;
 		line = line.replaceAll(" ","");
+		if(line.contains(")")) {
 		return line.substring(line.lastIndexOf(")")).contains("throws");
+		}
+		else {
+			return false;
+		}
 	}
 	
 	static Boolean IsThrow(String Line) {
@@ -243,9 +271,8 @@ public class Package {
 		return line.startsWith("catch");
   }
 	
-	static ArrayList<String> NewClassNames(String Line){
-		ArrayList<String> List  =new ArrayList<String>();
-		String line = Line.trim();
+	static void NewClassNames(String line , ArrayList<String> List){
+	      line = line.trim();
 		//line = line.substring(line.indexOf("=")+1);
 		line  = line.replaceAll(" ", "");
 		int BI;
@@ -254,27 +281,25 @@ public class Package {
 			line = line.substring(line.indexOf("new"));
 			BI = line.indexOf("new")+3;
 			BS = line.indexOf("(");
-			System.out.println(line);
-			System.out.println(BI);
-			System.out.println(BS);
+			//System.out.println(line);
+			//System.out.println(BI);
+			//System.out.println(BS);
 			List.add(line.substring(BI,BS));
 			line = line.replaceAll(Pattern.quote(line.substring(BI-3,BS+1)), "");
 		}
 		
-		return List;
+		
 	}
 	
-	static ArrayList<String> NewClassNamesCollection(String Line){
-		ArrayList<String> List  =new ArrayList<String>();
+	static void NewClassNamesCollection(String line , ArrayList<String> List){
 		String Patterne;
-		String line = Line;
 		int BI = 0;
 		int Case = 0;
 		int BS = 0;
 		line = line.trim();
 		line = line.replaceAll(" ","");
 		line = line.substring(0,line.indexOf("="));
-		System.out.println(line);
+		//System.out.println(line);
 		while(line.contains("<") ||  line.contains(">") || line.contains("[") ||  line.contains("]")) {
 			//System.out.println("Inside While");
 			if(line.contains("<")) {
@@ -298,10 +323,10 @@ public class Package {
 		    //System.out.println(BS);
 		    Patterne = line.substring(BI+1,BS);
 		    line = line.substring(0, BI) + line.substring(BS + 1);
-		    System.out.println(line);
+		   // System.out.println(line);
 		    
 		    
-		    System.out.println(Patterne);
+		   // System.out.println(Patterne);
 		    while( Patterne.contains("<") ||  Patterne.contains(">") || Patterne.contains("]")  || Patterne.contains("[") || Patterne.contains(",")) {
 		    	if(Patterne.contains("<")) {
 		    		BI= Patterne.indexOf("<");
@@ -337,78 +362,70 @@ public class Package {
 		}
 		             
 		
-		return List;
 	}
 	
-	
-	static ArrayList<ImportStatus> ImportStatusUpdate(File file, ArrayList<ImportStatus> ListImport) {
-	    String Line;
-	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-	        while ((Line = reader.readLine()) != null) {
-	            if (!Line.trim().contains("import")) {
-	                for (ImportStatus index : ListImport) {
-	                    if (!index.ImportName.contains("*")) {
-	                        int LastIndex = index.ImportName.lastIndexOf(".");
-	                        if (Line.contains(index.ImportName.substring(LastIndex + 1))) {
-	                 
-	                            index.ImportStatus = 1;
-	                        }
-	                    } else {
-	                        String JdkPath = "C:\\Users\\DELL\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-17.0.8.101-hotspot\\lib\\src.zip";
-	                        String PathExtracted = "C:\\Users\\DELL\\Metrics";
-	                      //  unzipFolder(JdkPath,PathExtracted);
-	                        if (index.ImportName.startsWith("java") && (!index.ImportName.contains("awt") || !index.ImportName.contains("rmi") || !index.ImportName.contains("sql") || !index.ImportName.contains("applet"))) {
-	                        	PathExtracted = PathExtracted + "\\java.base\\java\\";
-	                            int BI = index.ImportName.indexOf(".") + 1;
-	                            int BS = index.ImportName.lastIndexOf(".");
-	                            String PackageName = index.ImportName.substring(BI, BS);
-	                            String PackageName1;
-	                            if (PackageName.contains(".")) {
-	                                PackageName1 = PackageName.replace(".", "\\");
-	                            } else {
-	                                PackageName1 = PackageName;
+	 static ArrayList<ImportStatus> ImportStatusUpdate(File file, ArrayList<ImportStatus> ListImport) {
+	        //System.out.println(file.getName());
+	        String Line;
+	        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+	            while ((Line = reader.readLine()) != null) {
+	                if (!Line.trim().startsWith("import") && !IsComments(Line) && !Line.isEmpty()) {
+	                    for (ImportStatus index : ListImport) {
+	                        if (!index.ImportName.contains("*")) {
+	                            int LastIndex = index.ImportName.lastIndexOf(".");
+	                            String ImportName = index.ImportName.substring(LastIndex + 1);
+	                            ArrayList<String> ListClass = new ArrayList<>();
+	                            //System.out.println(ImportName);
+	                           // System.out.println(Line);
+	                            if (IsQoute(Line)) {
+	                                Line = RemoveQoute(Line);
 	                            }
-	                            PathExtracted = PathExtracted+PackageName1;
+	                            if (ContainsComment(Line)) {
+	                                Line = RemoveComment(Line);
+	                            }
 	                            
-	                           File extractedDirectory = new File(PathExtracted );
-	                            ArrayList<File> SubDir = new ArrayList<>();
-	                            SubDir = SubDirectoryList(extractedDirectory); // Use extracted directory File object
-	                            ArrayList<String> SubFile = new ArrayList<>();
-	                            SubFile = SubFilesList(extractedDirectory); // Use extracted directory File object
-	                            if (!SubFile.isEmpty()) {
-	                                for (String javaClass : SubFile) {
-	                                    if (Line.contains(javaClass)) {
-	                                    	//System.out.println(index.ImportName);
-	                                    	//System.out.println(javaClass);
-	                                        index.ImportStatus = 1;
-	                                    }
+	                            if (IsNew(Line)) {
+	                            	  if (Line.contains("<") || Line.contains(">") || Line.contains("[") || Line.contains("]")) {
+	                                      //System.out.println("COLLECTION");
+	  	                            	System.out.println(file.getName());
+	  	                            	System.out.println(Line);
+	                                      NewClassNamesCollection(Line, ListClass);
+	                                  }
+	                            	  else if (Line.contains("(") || Line.contains(")")) {
+	                                   // System.out.println("INSTANCE");
+	                                    NewClassNames(Line, ListClass);
 	                                }
 	                            }
-
-	                            if (!SubDir.isEmpty()) {
-	                                for (File idk : SubDir) {
-	                                    File[] filename = idk.listFiles();
-	                                    for (File idk2 : filename) {
-	                                        if (Line.contains(idk2.getName().replace(".java", ""))) {
-	                                        //	System.out.println(index.ImportName);
-	                                        	//System.out.println(idk2.getName().replace(".java", ""));
-	                                            index.ImportStatus = 1;
-	                                        }
-	                                    }
-
+	                            else {
+	                          
+	                          
+	                            if (IsCatch(Line)) {
+	                       //         System.out.println("catch");
+	                                ListClass.add(CatchException(Line));
+	                            } else if (IsThrow(Line)) {
+	                         //       System.out.println("throw");
+	                                ListClass.add(ThrowException(Line));
+	                            } else if (IsThrows(Line)) {
+	                           //     System.out.println("throws");
+	                                ListClass.add(ThrowsException(Line));
+	                            }
+	                            }
+	                            
+	                            for (String ClassName : ListClass) {
+	                                if (ClassName.equals(ImportName)) {
+	                                    index.ImportStatus = 1;
 	                                }
 	                            }
 	                        }
 	                    }
 	                }
 	            }
-
+	        } catch (IOException e) {
+	            e.printStackTrace();
 	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
+	        return ListImport;
 	    }
-	    return ListImport;
-	}
+
 
 	
 	static ArrayList<ImportStatus> ImportFetch(File file){
@@ -439,11 +456,11 @@ public class Package {
 		File[] files = SrcDirectory.listFiles();
 		ArrayList<Package> List = new ArrayList<Package>();
 		ArrayList<FileInfo> defaultPackageFilesList = new ArrayList<FileInfo>();
-
 		for(File index : files) {
 			 if(index.isDirectory()) {
 	                File[] subFiles = index.listFiles();
 	                ArrayList<FileInfo> FileList = new ArrayList<FileInfo>();
+	            
 	                for (File subFile : subFiles) {
 	                    if (subFile.isFile()) {
 	                    	FileList.add(new FileInfo(subFile.getName(),CountLines(subFile),ImportStatusUpdate(subFile,ImportFetch(subFile))));
