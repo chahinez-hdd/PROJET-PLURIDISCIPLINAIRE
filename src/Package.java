@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -17,7 +18,8 @@ import java.util.zip.ZipInputStream;
 
 //TODO
 /* Methode To Fetch ClassName
- * Methode To Fetch Comment
+ * IsNew Update
+ * IsVariable Update
  * 
  */
 
@@ -61,17 +63,39 @@ public class Package {
 		}
 		
 		
-	}
+	} 
+	static void extractClassNamesMethode(String methodLine , ArrayList<String>classNames) {
+        String line = methodLine.trim().substring(methodLine.indexOf("(")+1,methodLine.indexOf(")")+1);  		
+        
+		//System.out.println(line);
+		Pattern pattern = Pattern.compile("\\b\\w+\\b(?!\\s*,)(?!\\s*\\))"); 
+
+        Matcher matcher = pattern.matcher(line);
+        while (matcher.find()) {
+            String className = matcher.group();
+            classNames.add(className);
+        }
+        pattern = Pattern.compile("(?<=<\\s*)\\b\\w+\\b");
+        Matcher matcher2 = pattern.matcher(line); 
+        while (matcher2.find()) {
+            String className = matcher2.group();
+            classNames.add(className);
+        }	        
+        	
+ }
+	
+	
 	
 	
 	static boolean IsMethode(String Line) {
-		String trimmedLine = Line.trim();
-	    return trimmedLine.matches("\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\)\\s*(;|\\{)?\\s*");
+	    return Line.matches("(?!else\\s+if\\s*\\()\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\)\\s*(;|\\{)?\\s*");
 	}
+	
 	
 	static boolean IsBracket(String Line) {
 		String line = Line.trim();
-		return line.startsWith("{") || line.startsWith("}");
+		line = line.replace(" ", "");
+		return line.equals("{") || line.equals("}");
 	}
 	
 	static int CountLines(File file) {
@@ -80,12 +104,11 @@ public class Package {
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
 	            	if(!Line.isEmpty() && !IsComments(Line)) {
-	            	if(IsQoute(Line)) {
-	            		Line = RemoveQoute(Line);
-	            	}
-	            	if(ContainsComment(Line)) {
-	            		Line = RemoveComment(Line);
-	            	}
+	            	
+	            		 RemoveQoute(Line);
+	            	
+	                RemoveComment(Line);
+	            	
 	                if(!IsBracket(Line)) {          	
 	                	++NbLine;
 	                }
@@ -126,19 +149,17 @@ public class Package {
 	}
 	
 	
-	static String RemoveComment(String Line) {
-		 String line = Line;
+	static void RemoveComment(String line) {
+		 if(ContainsComment(line)) {
 	     int index = line.indexOf("\\\\");
 	     line = line.substring(0,index);
-			return line;
+		 }
+			
 	 } 
 	
 	 static boolean ContainsComment(String Line) {
 		 boolean b = false;
 		 String line = Line;
-		 if(IsQoute(line)) {
-			 line = RemoveQoute(line);
-		 }
 		 if(line.contains("\\\\") ) {
 			 b = true;
 		 }
@@ -157,16 +178,16 @@ public class Package {
    
    static boolean IsQoute(String Line) {
    	boolean b = false;
-   	if(Line.contains("\"")) {
+   	if(Line.contains("\"") || !Line.trim().startsWith("if")) {
    		b = true;
    	}
    	
    	return b;
    }
    
-   static String RemoveQoute(String Line) {
-   	String line = Line;
+   static void RemoveQoute(String line) {
    	String qoute;
+   	if(IsQoute(line)) {
    	while(line.contains("\"")) {
              
    		int BI = line.indexOf("\"");
@@ -180,28 +201,18 @@ public class Package {
    		
    		
    	}
-   	
-   		return line;
+   	}
    	
    }
    
    
    static boolean IsNew(String Line) {
    	boolean b  = false;
-   	String line = Line;
-   	if(IsQoute(Line))
-   	{
-   	
-   		 line = RemoveQoute(Line);
-   		 
-   		 
-   	}	
+   	String line = Line;	
    	if(line.replaceAll(" ","").contains("=new") || line.replaceAll(" ", "").contains("(new")) {
    		
    		b = true;
    	}
-   	
-   	
    	
    	return b;
    }
@@ -245,6 +256,56 @@ public class Package {
 		return line.substring(0,BS);
 	}
 	
+	
+	static boolean IsImport(String Line) {
+		return Line.startsWith("import ");
+	}
+	
+	
+	
+	
+	static int IsJavaProject(String PathProject) {
+		if(!(new File (PathProject).exists())) {
+			System.out.println("Error Path Doesnt even Exist");
+			return -1;
+		}
+		if(!PathProject.endsWith("\\src") && !PathProject.endsWith("\\src\\")) {
+			PathProject+="\\src";
+		}
+		File SrcFile = new File(PathProject);
+		if(!SrcFile.exists()) {
+			System.out.println("Src Folder Doesn't Exist");
+		return -2;
+		}
+		else {
+		File [] ListFile = SrcFile.listFiles();
+		if(ListFile.length == 0) {
+			System.out.println("Src Folder Is Empty");
+        return 0;
+		}
+		else {
+		return RecursiveDir(ListFile);	
+		}
+	}
+	}
+		
+		static int RecursiveDir(File[] ListFile) {
+			for(File FILE : ListFile) {
+				if(FILE.isDirectory()) {
+			    File[] SubDir = FILE.listFiles();
+			    return RecursiveDir(SubDir);
+				}
+				else if(FILE.isFile()){
+					if(FILE.getName().endsWith(".java")) {
+						return 1;
+					}
+				}
+			}
+			
+			return 2;
+		}
+
+	
 	static Boolean IsThrows(String Line) {
 		String line = Line;
 		line = line.replaceAll(" ","");
@@ -264,12 +325,16 @@ public class Package {
 	}
 	
 	
-  static Boolean IsCatch(String Line) {
-	   String line = Line;
-	   line = line.replaceAll(" ","");
-		line = line.trim();
-		return line.startsWith("catch");
-  }
+	 static Boolean IsCatch(String Line) {
+		   String line = Line;
+		   line = line.replaceAll(" ","");
+			line = line.trim();
+			if(line.startsWith("}")) {
+				line = line.replaceAll("}","");
+			}
+			return line.startsWith("catch");
+	   }
+		
 	
 	static void NewClassNames(String line , ArrayList<String> List){
 	      line = line.trim();
@@ -364,67 +429,41 @@ public class Package {
 		
 	}
 	
-	 static ArrayList<ImportStatus> ImportStatusUpdate(File file, ArrayList<ImportStatus> ListImport) {
-	        //System.out.println(file.getName());
-	        String Line;
-	        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-	            while ((Line = reader.readLine()) != null) {
-	                if (!Line.trim().startsWith("import") && !IsComments(Line) && !Line.isEmpty()) {
-	                    for (ImportStatus index : ListImport) {
-	                        if (!index.ImportName.contains("*")) {
-	                            int LastIndex = index.ImportName.lastIndexOf(".");
-	                            String ImportName = index.ImportName.substring(LastIndex + 1);
-	                            ArrayList<String> ListClass = new ArrayList<>();
-	                            //System.out.println(ImportName);
-	                           // System.out.println(Line);
-	                            if (IsQoute(Line)) {
-	                                Line = RemoveQoute(Line);
-	                            }
-	                            if (ContainsComment(Line)) {
-	                                Line = RemoveComment(Line);
-	                            }
-	                            
-	                            if (IsNew(Line)) {
-	                            	  if (Line.contains("<") || Line.contains(">") || Line.contains("[") || Line.contains("]")) {
-	                                      //System.out.println("COLLECTION");
-	  	                            	System.out.println(file.getName());
-	  	                            	System.out.println(Line);
-	                                      NewClassNamesCollection(Line, ListClass);
-	                                  }
-	                            	  else if (Line.contains("(") || Line.contains(")")) {
-	                                   // System.out.println("INSTANCE");
-	                                    NewClassNames(Line, ListClass);
-	                                }
-	                            }
-	                            else {
-	                          
-	                          
-	                            if (IsCatch(Line)) {
-	                       //         System.out.println("catch");
-	                                ListClass.add(CatchException(Line));
-	                            } else if (IsThrow(Line)) {
-	                         //       System.out.println("throw");
-	                                ListClass.add(ThrowException(Line));
-	                            } else if (IsThrows(Line)) {
-	                           //     System.out.println("throws");
-	                                ListClass.add(ThrowsException(Line));
-	                            }
-	                            }
-	                            
-	                            for (String ClassName : ListClass) {
-	                                if (ClassName.equals(ImportName)) {
-	                                    index.ImportStatus = 1;
-	                                }
-	                            }
-	                        }
-	                    }
-	                }
+	  
+	 static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus> ImportList){
+		 	 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+	            String line;
+	            while ((line = reader.readLine()) != null) {
+	            	line = line.trim();
+	                RemoveQoute(line);
+	                RemoveComment(line);
+	                ArrayList<String> ListImportFromFile = new ArrayList<String>();
+	            	if(!line.isEmpty() && !IsComments(line) && !IsImport(line)) {
+	            	if(IsMethode(line)) {
+	            		//System.out.println(line);
+	            		  extractClassNamesMethode(line, ListImportFromFile);
+	            		  //System.out.println(ListImportFromFile);
+	            	}
+	            	else if(IsCatch(line)) {
+	            		//System.out.println(line);
+	            		ListImportFromFile.add(CatchException(line));
+	            		//System.out.println(CatchException(line));
+	            	}
+	            	for(ImportStatus Import : ImportList) {
+	            		for(String ImportFile :  ListImportFromFile) {
+	            			if(Import.ImportName.equals(ImportFile)) {
+	            				Import.ImportStatus = 1;
+	            			}
+	            		}
+	            	}
+	               }	               
+	                
 	            }
 	        } catch (IOException e) {
-	            e.printStackTrace();
+	            e.printStackTrace(); // Handle any IO exceptions
 	        }
-	        return ListImport;
-	    }
+		 return ImportList;
+	 }
 
 
 	
@@ -433,13 +472,13 @@ public class Package {
 		String Line;
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
-	            	if(Line.trim().startsWith("import")) {
-	            		Line = Line.trim();
+	            	Line = Line.trim();
+	            	if(IsImport(Line)) {
 	            		int index = Line.indexOf(';');
 	            		ImportList.add(new ImportStatus(Line.substring(7, index),0));
 	            		
 	            	}
-	            	if(Line.contains("class")) {
+	            	else {
 	            		break;
 	            	}
 	            }
@@ -457,13 +496,20 @@ public class Package {
 		ArrayList<Package> List = new ArrayList<Package>();
 		ArrayList<FileInfo> defaultPackageFilesList = new ArrayList<FileInfo>();
 		for(File index : files) {
+			
 			 if(index.isDirectory()) {
 	                File[] subFiles = index.listFiles();
 	                ArrayList<FileInfo> FileList = new ArrayList<FileInfo>();
 	            
 	                for (File subFile : subFiles) {
 	                    if (subFile.isFile()) {
-	                    	FileList.add(new FileInfo(subFile.getName(),CountLines(subFile),ImportStatusUpdate(subFile,ImportFetch(subFile))));
+	                    	System.out.println("bhjd");
+	                    	String FileName =subFile.getName();
+	                    	int NumberLine = CountLines(subFile);
+	                    	ArrayList<ImportStatus> ListImport = new ArrayList<ImportStatus>();
+	                    	ListImport = ImportFetch(subFile);
+	                    	update(subFile,ListImport);
+	                    	FileList.add(new FileInfo(FileName,NumberLine,ListImport));
 	               
 	                    	
 	                    }
@@ -474,7 +520,7 @@ public class Package {
 	            }
 			 else if (index.isFile()) {
 				 
-				 defaultPackageFilesList.add(new FileInfo(index.getName(), CountLines(index),ImportStatusUpdate(index,ImportFetch(index))));
+				 defaultPackageFilesList.add(new FileInfo(index.getName(), CountLines(index),update(index,ImportFetch(index))));
 				 
 			 }
 		}

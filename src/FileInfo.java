@@ -5,8 +5,8 @@ public class FileInfo {
 	int FileNumberLine;
 	ArrayList<ImportStatus> FileImport = new ArrayList<ImportStatus>();
 
-	FileInfo(String FileName,int FileNumberLine,ArrayList<ImportStatus> FileImport){
-		this.FileName =FileName;
+	FileInfo(String FileName,int FileNumberLine,ArrayList<ImportStatus> FileImport)
+	{	this.FileName =FileName;
 		this.FileImport=FileImport;
 		this.FileNumberLine=FileNumberLine;
 	}
