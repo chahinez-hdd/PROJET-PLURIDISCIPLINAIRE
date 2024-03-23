@@ -1,6 +1,8 @@
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -64,6 +66,8 @@ public class Package {
 		
 		
 	} 
+	
+	//Method To Extract Class Names From Method Prototype Line
 	static void extractClassNamesMethode(String methodLine , ArrayList<String>classNames) {
         String line = methodLine.trim().substring(methodLine.indexOf("(")+1,methodLine.indexOf(")")+1);  		
         
@@ -86,18 +90,19 @@ public class Package {
 	
 	
 	
-	
+  //Method to know If Line Is A Method Prototype	
 	static boolean IsMethode(String Line) {
 	    return Line.matches("(?!else\\s+if\\s*\\()\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\)\\s*(;|\\{)?\\s*");
 	}
 	
-	
+	//Method to Know If Line Is Bracket Only Line
 	static boolean IsBracket(String Line) {
 		String line = Line.trim();
 		line = line.replace(" ", "");
 		return line.equals("{") || line.equals("}");
 	}
 	
+	//CountLine Excluding Comment only Line , Empty Line , Bracket Only Line
 	static int CountLines(File file) {
 		int NbLine = 0;
 		String Line;
@@ -148,7 +153,7 @@ public class Package {
 		return SubList;
 	}
 	
-	
+	//Method To Remove Comment From Line
 	static void RemoveComment(String line) {
 		 if(ContainsComment(line)) {
 	     int index = line.indexOf("\\\\");
@@ -157,6 +162,7 @@ public class Package {
 			
 	 } 
 	
+	//Method To Know If Line Contains Comment
 	 static boolean ContainsComment(String Line) {
 		 boolean b = false;
 		 String line = Line;
@@ -166,6 +172,8 @@ public class Package {
 		 return b;
 	 }
 	 
+	 
+	 //Method To Know If Line Comment Only Line
    static boolean IsComments(String Line) {
        
    	boolean b  = false;
@@ -217,7 +225,7 @@ public class Package {
    	return b;
    }
 	
-	
+ //Method To Fetch Exception From Throws
 	static String ThrowsException(String Line) {
 		String line = Line.trim();
 		int BI = line.indexOf("throws")+6;
@@ -235,7 +243,7 @@ public class Package {
 		
 	}
 	
-	
+	//Method To Fetch Exception From Throw	
 	static String ThrowException(String Line) {
 		String line = Line.trim();
 		int BI = line.indexOf("new")+3;
@@ -246,6 +254,7 @@ public class Package {
 		return line.substring(0,BS);
 	}
 	
+	//Method To Fetch Exception From Catch
 	static String CatchException(String Line) {
 		String line = Line;
 		line = line.trim();
@@ -256,14 +265,14 @@ public class Package {
 		return line.substring(0,BS);
 	}
 	
-	
+	//Method To Know If Line Is Import
 	static boolean IsImport(String Line) {
 		return Line.startsWith("import ");
 	}
 	
 	
 	
-	
+	//Method To Know If A Giving Path Is A Java Project
 	static int IsJavaProject(String PathProject) {
 		if(!(new File (PathProject).exists())) {
 			System.out.println("Error Path Doesnt even Exist");
@@ -288,7 +297,7 @@ public class Package {
 		}
 	}
 	}
-		
+		//Recursive Method To Browse The Src/ Directory
 		static int RecursiveDir(File[] ListFile) {
 			for(File FILE : ListFile) {
 				if(FILE.isDirectory()) {
@@ -305,7 +314,7 @@ public class Package {
 			return 2;
 		}
 
-	
+	//Method To Know If Line Is Throws
 	static Boolean IsThrows(String Line) {
 		String line = Line;
 		line = line.replaceAll(" ","");
@@ -316,7 +325,7 @@ public class Package {
 			return false;
 		}
 	}
-	
+	//Method To Know If Line Is Throw
 	static Boolean IsThrow(String Line) {
 		String line = Line;
 		line = line.replaceAll(" ","");
@@ -324,7 +333,7 @@ public class Package {
 		return line.startsWith("throw");
 	}
 	
-	
+	//Method To Know If Line Is Catch
 	 static Boolean IsCatch(String Line) {
 		   String line = Line;
 		   line = line.replaceAll(" ","");
@@ -429,7 +438,7 @@ public class Package {
 		
 	}
 	
-	  
+	  //Method To Update Flags Of ImportStatus(used , not used)
 	 static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus> ImportList){
 		 	 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            String line;
@@ -451,7 +460,8 @@ public class Package {
 	            	}
 	            	for(ImportStatus Import : ImportList) {
 	            		for(String ImportFile :  ListImportFromFile) {
-	            			if(Import.ImportName.equals(ImportFile)) {
+	            			if(Import.ImportName.substring(Import.ImportName.lastIndexOf(".")+1).equals(ImportFile)) {
+	            			
 	            				Import.ImportStatus = 1;
 	            			}
 	            		}
@@ -466,7 +476,7 @@ public class Package {
 	 }
 
 
-	
+	//Method To Fetch Import From File
 	static ArrayList<ImportStatus> ImportFetch(File file){
 		ArrayList<ImportStatus> ImportList = new ArrayList<ImportStatus>();
 		String Line;
@@ -478,7 +488,7 @@ public class Package {
 	            		ImportList.add(new ImportStatus(Line.substring(7, index),0));
 	            		
 	            	}
-	            	else {
+	            	else if (!Line.isEmpty()){
 	            		break;
 	            	}
 	            }
@@ -489,6 +499,7 @@ public class Package {
 		return ImportList;
 	}
 	
+	//Browse src/ Dir And Call The Metrics (Will Change cause Browsing Isn't Recursive)
 	static ArrayList<Package> NumberLineJavaProject(String ProjectPath) {
 		String SrcPath = ProjectPath+"/src";
 		File SrcDirectory = new File(SrcPath);
