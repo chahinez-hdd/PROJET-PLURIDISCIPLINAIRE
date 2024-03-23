@@ -19,10 +19,10 @@ import java.util.zip.ZipInputStream;
 
 
 //TODO
-/* Methode To Fetch ClassName
- * IsNew Update
- * IsVariable Update
- * 
+/* change fetchmethod for 1 pattern
+ * IsVariable
+ * fetch variableclass
+ * test throw and throws
  */
 
 
@@ -127,31 +127,6 @@ public class Package {
 	}
 	
 	
-	static ArrayList<String> SubFilesList(File file){
-		ArrayList<String> SubList = new ArrayList<String>();
-		File[] SubFiles = file.listFiles();
-		if(SubFiles!=null) {
-		for(File index : SubFiles) {
-			if(index.isFile()) {
-				SubList.add(index.getName().replace(".java", ""));
-			}
-		}
-		}
-		return SubList;	
-	}
-	
-	static ArrayList<File> SubDirectoryList(File file){
-		ArrayList<File> SubList = new ArrayList<File>();
-		File[] SubFiles = file.listFiles();
-		if(SubFiles!=null) {
-		for(File index : SubFiles) {
-			if(index.isDirectory()) {
-				SubList.add(index);
-			}
-		}
-		}
-		return SubList;
-	}
 	
 	//Method To Remove Comment From Line
 	static void RemoveComment(String line) {
@@ -184,15 +159,13 @@ public class Package {
    	return b;
    }
    
+   //Method That Detect Qoute In Line
    static boolean IsQoute(String Line) {
-   	boolean b = false;
-   	if(Line.contains("\"") || !Line.trim().startsWith("if")) {
-   		b = true;
-   	}
-   	
-   	return b;
-   }
+		Line = Line.trim();
+		return Line.contains("\"");
+	}
    
+   //Method To RemoveQoute From Line
    static void RemoveQoute(String line) {
    	String qoute;
    	if(IsQoute(line)) {
@@ -214,16 +187,26 @@ public class Package {
    }
    
    
-   static boolean IsNew(String Line) {
-   	boolean b  = false;
-   	String line = Line;	
-   	if(line.replaceAll(" ","").contains("=new") || line.replaceAll(" ", "").contains("(new")) {
-   		
-   		b = true;
-   	}
-   	
-   	return b;
-   }
+    //Method To Know If Line Is New Line Instanciation
+	static boolean IsNew(String Line) {
+		String trimmedLine = Line.trim();
+		String pattern = "(\\(|\\=)\\s*new\\s+";
+
+	    return trimmedLine.matches(".*"+pattern+".*");
+	}
+	
+	
+	static void ExtractNewClassNames(String NewLine , ArrayList<String> classNames) {
+	    Pattern pattern = Pattern.compile("new\\s+(\\w+)|(?:<|,)\\s*(\\w+)");
+	    Matcher matcher = pattern.matcher(NewLine);
+	    while (matcher.find()) {
+	        String className = matcher.group(1);
+	        if (className == null) { // If the first capturing group didn't match
+	            className = matcher.group(2); // Use the second capturing group
+	        }
+	        classNames.add(className);
+	    }
+	}
 	
  //Method To Fetch Exception From Throws
 	static String ThrowsException(String Line) {
@@ -319,7 +302,7 @@ public class Package {
 		String line = Line;
 		line = line.replaceAll(" ","");
 		if(line.contains(")")) {
-		return line.substring(line.lastIndexOf(")")).contains("throws");
+		return line.substring(line.lastIndexOf(")")).contains("throws ");
 		}
 		else {
 			return false;
@@ -327,10 +310,7 @@ public class Package {
 	}
 	//Method To Know If Line Is Throw
 	static Boolean IsThrow(String Line) {
-		String line = Line;
-		line = line.replaceAll(" ","");
-		line = line.trim();
-		return line.startsWith("throw");
+		return Line.startsWith("throw ");
 	}
 	
 	//Method To Know If Line Is Catch
@@ -345,98 +325,7 @@ public class Package {
 	   }
 		
 	
-	static void NewClassNames(String line , ArrayList<String> List){
-	      line = line.trim();
-		//line = line.substring(line.indexOf("=")+1);
-		line  = line.replaceAll(" ", "");
-		int BI;
-		int BS;
-		while(line.contains("new")) {
-			line = line.substring(line.indexOf("new"));
-			BI = line.indexOf("new")+3;
-			BS = line.indexOf("(");
-			//System.out.println(line);
-			//System.out.println(BI);
-			//System.out.println(BS);
-			List.add(line.substring(BI,BS));
-			line = line.replaceAll(Pattern.quote(line.substring(BI-3,BS+1)), "");
-		}
-		
-		
-	}
 	
-	static void NewClassNamesCollection(String line , ArrayList<String> List){
-		String Patterne;
-		int BI = 0;
-		int Case = 0;
-		int BS = 0;
-		line = line.trim();
-		line = line.replaceAll(" ","");
-		line = line.substring(0,line.indexOf("="));
-		//System.out.println(line);
-		while(line.contains("<") ||  line.contains(">") || line.contains("[") ||  line.contains("]")) {
-			//System.out.println("Inside While");
-			if(line.contains("<")) {
-				BI= line.indexOf("<");
-				Case =1;
-			}
-			else if(line.contains("[")) {
-             BI = line.indexOf("[");
-             Case= 2;
-		}   
-			//System.out.println(BI);
-			List.add(line.substring(0,BI));
-			//System.out.println(List);
-			
-		    if(Case ==1) {
-		    	BS = line.lastIndexOf(">");
-		    }
-		    else if (Case == 2) {
-		    	BS = line.lastIndexOf("]");
-		    }
-		    //System.out.println(BS);
-		    Patterne = line.substring(BI+1,BS);
-		    line = line.substring(0, BI) + line.substring(BS + 1);
-		   // System.out.println(line);
-		    
-		    
-		   // System.out.println(Patterne);
-		    while( Patterne.contains("<") ||  Patterne.contains(">") || Patterne.contains("]")  || Patterne.contains("[") || Patterne.contains(",")) {
-		    	if(Patterne.contains("<")) {
-		    		BI= Patterne.indexOf("<");
-					Case =1;
-		    	}
-		    	else if (Patterne.contains("[")) {
-		    		BI= Patterne.indexOf("[");
-					Case =2;
-		    	}
-		    	else if(Patterne.contains(",")) {
-		    		BI = Patterne.indexOf(",");
-		    		Case = 3;
-		    	}
-		    	if(Case == 3) {
-		    		
-		    	List.add(Patterne.substring(0,BI));
-		    	List.add(Patterne.substring(BI+1));
-		    	Patterne = Patterne.substring(0,BI) + Patterne.substring(BI+1);
-		    	}
-		    	else {
-		    	 if(Case ==1) {
-				    	BS = Patterne.indexOf(">");
-				    }
-				    else if (Case == 2) {
-				    	BS = Patterne.indexOf("]");
-				    }
-		    	  List.add(Patterne.substring(BI+1,BS));
-		    	  Patterne = Patterne.replaceAll(Pattern.quote(Patterne.substring(BI,BS+1)),"");
-		    	}
-		    	}
-		    line = line.replaceAll(Pattern.quote(Patterne),"");
-			
-		}
-		             
-		
-	}
 	
 	  //Method To Update Flags Of ImportStatus(used , not used)
 	 static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus> ImportList){
