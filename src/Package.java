@@ -19,8 +19,7 @@ import java.util.zip.ZipInputStream;
 
 
 //TODO
-/* change fetchmethod for 1 pattern
- * IsVariable
+/* IsVariable
  * fetch variableclass
  * test throw and throws
  */
@@ -68,26 +67,18 @@ public class Package {
 	} 
 	
 	//Method To Extract Class Names From Method Prototype Line
-	static void extractClassNamesMethode(String methodLine , ArrayList<String>classNames) {
-        String line = methodLine.trim().substring(methodLine.indexOf("(")+1,methodLine.indexOf(")")+1);  		
-        
-		//System.out.println(line);
-		Pattern pattern = Pattern.compile("\\b\\w+\\b(?!\\s*,)(?!\\s*\\))"); 
+	 static void extractClassNamesMethode(String methodLine,ArrayList<String> classNames) { 
+		 String line = methodLine.substring(methodLine.indexOf("(")+1,methodLine.indexOf(")")+1); 
+	        Pattern pattern = Pattern.compile("(?<=<\\s*)\\b\\w+\\b|\\b\\w+\\b(?!\\s*,)(?!\\s*\\))"); // Regular expression to match class names
 
-        Matcher matcher = pattern.matcher(line);
-        while (matcher.find()) {
-            String className = matcher.group();
-            classNames.add(className);
-        }
-        pattern = Pattern.compile("(?<=<\\s*)\\b\\w+\\b");
-        Matcher matcher2 = pattern.matcher(line); 
-        while (matcher2.find()) {
-            String className = matcher2.group();
-            classNames.add(className);
-        }	        
-        	
- }
-	
+	        Matcher matcher = pattern.matcher(line);
+	        while (matcher.find()) {
+	            String className = matcher.group();
+	            classNames.add(className);
+	        }
+	        
+	        
+	 }	
 	
 	
   //Method to know If Line Is A Method Prototype	
@@ -97,7 +88,7 @@ public class Package {
 	
 	//Method to Know If Line Is Bracket Only Line
 	static boolean IsBracket(String Line) {
-		String line = Line.trim();
+		String line = Line;
 		line = line.replace(" ", "");
 		return line.equals("{") || line.equals("}");
 	}
@@ -187,7 +178,7 @@ public class Package {
    }
    
    
-    //Method To Know If Line Is New Line Instanciation
+    //Method To Know If Line Is New Line Instantiation
 	static boolean IsNew(String Line) {
 		String trimmedLine = Line.trim();
 		String pattern = "(\\(|\\=)\\s*new\\s+";
@@ -195,7 +186,7 @@ public class Package {
 	    return trimmedLine.matches(".*"+pattern+".*");
 	}
 	
-	
+    //Method To Extract ClassNames From NewLine	
 	static void ExtractNewClassNames(String NewLine , ArrayList<String> classNames) {
 	    Pattern pattern = Pattern.compile("new\\s+(\\w+)|(?:<|,)\\s*(\\w+)");
 	    Matcher matcher = pattern.matcher(NewLine);
@@ -228,7 +219,7 @@ public class Package {
 	
 	//Method To Fetch Exception From Throw	
 	static String ThrowException(String Line) {
-		String line = Line.trim();
+		String line = Line;
 		int BI = line.indexOf("new")+3;
 		line = line.substring(BI);
 		line = line.trim();
@@ -240,7 +231,6 @@ public class Package {
 	//Method To Fetch Exception From Catch
 	static String CatchException(String Line) {
 		String line = Line;
-		line = line.trim();
 		int BI = line.indexOf("(")+1;
 		line = line.substring(BI);
 		line = line.trim();
@@ -341,6 +331,11 @@ public class Package {
 	            		//System.out.println(line);
 	            		  extractClassNamesMethode(line, ListImportFromFile);
 	            		  //System.out.println(ListImportFromFile);
+	            	}
+	            	else if(IsNew(line)) {
+	            		System.out.println(line);
+	            		ExtractNewClassNames(line,ListImportFromFile);
+	            		System.out.println(ListImportFromFile);
 	            	}
 	            	else if(IsCatch(line)) {
 	            		//System.out.println(line);
