@@ -19,9 +19,9 @@ import java.util.zip.ZipInputStream;
 
 
 //TODO
-/* IsVariable
- * fetch variableclass
+/* code formater
  * test throw and throws
+ * Comment Issue
  */
 
 
@@ -64,7 +64,37 @@ public class Package {
 		}
 		
 		
-	} 
+	}
+	
+	
+    //Detect If Line Is Variable
+	static boolean IsVariable(String line) {
+	    String variablePattern = "\\b\\w+\\b\\s+\\w+\\s*(=\\s*.+)?;?";
+	    String ArrayPattern="\\w+\\s*(\\[\\s*\\]\\s*){1,2}\\w+\\s*(=\\s*.+)?;?";
+	    String CollectionPattern="\\w+\\s*\\<[\\s\\S]+?>\\s*\\w+\\s*(=\\s*.+)?;?";
+	    return line.matches(variablePattern) || line.matches(CollectionPattern) || line.matches(ArrayPattern);
+	}
+	
+	
+	//Fetch Class Name From Var Line
+	static void ExtractVarClassNames(String VarLine , ArrayList<String> classNames) {
+	    Pattern pattern = Pattern.compile("\\s*(\\w+)\\s*(?=[\\[<>])|(?<=[<])\\s*(\\w+)|^(\\w+)");
+	    Matcher matcher = pattern.matcher(VarLine);
+	    while (matcher.find()) {
+	        String className = matcher.group(1);
+	       if(className==null) {
+	    	   className = matcher.group(2);
+	    	   if(className==null) {
+	    		   className = matcher.group(3);
+	    	   }
+	    	   }
+	        classNames.add(className);
+	    }
+	}
+	
+	
+	
+	
 	
 	//Method To Extract Class Names From Method Prototype Line
 	 static void extractClassNamesMethode(String methodLine,ArrayList<String> classNames) { 
