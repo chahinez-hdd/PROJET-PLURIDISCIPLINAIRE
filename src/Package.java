@@ -19,9 +19,10 @@ import java.util.zip.ZipInputStream;
 
 
 //TODO
-/* code formater
- * test throw and throws
- * Comment Issue
+/* code formatter
+ * test throw and throws and comment
+ * organize my method
+ * recursive browse 
  */
 
 
@@ -66,6 +67,88 @@ public class Package {
 		
 	}
 	
+	
+	 static String RemoveComment2(String Line) {
+		 String line = Line;
+	     int index = line.indexOf("\\\\");
+	     line = line.substring(0,index);
+			return line;
+	 } 
+	
+	 static boolean ContainsComment2(String Line) {
+		 boolean b = false;
+		 String line = Line;
+		 if(IsQoute(line)) {
+			 RemoveQoute(line);
+		 }
+		 if(line.contains("\\\\") ) {
+			 b = true;
+		 }
+		 return b;
+	 }
+	
+	         /*ffffffffffffffffffffffff
+	 * 
+	 * 
+	 */
+	 
+	 static boolean FinishedComment(String Line) {
+		 Line = Line.trim();
+		return Line.contains("/*") && Line.contains("*/") ;	 
+	 }
+	static boolean NotFinishedComment(String Line) {
+		Line = Line.trim();
+		return Line.contains("/*") && !Line.contains("*/") ;
+	}
+	
+	
+	
+	static boolean ContainsOpeningComment(String Line) {
+		return Line.startsWith("/*");
+	}
+	
+
+	static boolean ContainsClosingComment(String Line) {
+		String line = Line.replaceAll(" ", "");
+		return line.endsWith("*/");
+	}
+	
+	static String CodeOpeningComment(String Line) {
+		return Line.substring(0,Line.indexOf("/*"));
+	}
+	
+	static String CodeClosingComment(String Line) {
+		return Line.substring(Line.indexOf("*/")+2);
+	}
+	
+	
+	static void JumpComment (String Line,ArrayList<String> List,BufferedReader reader) {
+		if(!ContainsOpeningComment(Line)) {
+			List.add(CodeOpeningComment(Line));
+		}
+		try {
+			while ((Line = reader.readLine()) != null) { 
+			Line = Line.trim();
+			RemoveQoute(Line);
+			if(Line.contains("*/")) {
+				break;
+			}
+			}
+		}
+		catch(IOException e) {
+			
+		}
+		if(!ContainsClosingComment(Line)) {
+			List.add(CodeClosingComment(Line));
+		}
+	}
+	
+	static boolean IsCommentOnlyCompleted(String Line) {
+		Line = Line.trim();
+	    String singleLineCommentPattern = "//.*"; 
+	    String multiLineCommentPatternCompleted = "/\\*((?!(\\*/))[^\\n]|\\n)*(\\*/)";
+	return Line.matches(multiLineCommentPatternCompleted)||Line.matches(singleLineCommentPattern);
+	}
 	
     //Detect If Line Is Variable
 	static boolean IsVariable(String line) {
@@ -344,7 +427,26 @@ public class Package {
 			return line.startsWith("catch");
 	   }
 		
-	
+	static void IsAll(ArrayList<String> ListImportFromFile , String line) {
+		if(IsMethode(line)) {
+    		//System.out.println(line);
+    		  extractClassNamesMethode(line, ListImportFromFile);
+    		  //System.out.println(ListImportFromFile);
+    	}
+    	else if(IsNew(line)) {
+    		System.out.println(line);
+    		ExtractNewClassNames(line,ListImportFromFile);
+    		System.out.println(ListImportFromFile);
+    	}
+    	else if(IsCatch(line)) {
+    		//System.out.println(line);
+    		ListImportFromFile.add(CatchException(line));
+    		//System.out.println(CatchException(line));
+    	}
+    	else if (IsVariable(line)) {
+    		ExtractVarClassNames(line,ListImportFromFile);
+    	}
+	}
 	
 	
 	  //Method To Update Flags Of ImportStatus(used , not used)
@@ -354,24 +456,31 @@ public class Package {
 	            while ((line = reader.readLine()) != null) {
 	            	line = line.trim();
 	                RemoveQoute(line);
-	                RemoveComment(line);
 	                ArrayList<String> ListImportFromFile = new ArrayList<String>();
-	            	if(!line.isEmpty() && !IsComments(line) && !IsImport(line)) {
-	            	if(IsMethode(line)) {
-	            		//System.out.println(line);
-	            		  extractClassNamesMethode(line, ListImportFromFile);
-	            		  //System.out.println(ListImportFromFile);
+	            	if(!line.isEmpty() && !IsCommentOnlyCompleted(line) && !IsImport(line)) {
+	            	if(ContainsComment2(line)) {
+	            		line = RemoveComment2(line);
 	            	}
-	            	else if(IsNew(line)) {
-	            		System.out.println(line);
-	            		ExtractNewClassNames(line,ListImportFromFile);
-	            		System.out.println(ListImportFromFile);
+	            	else {
+	            		ArrayList<String> ListCode=new ArrayList<String>();
+	            		if(FinishedComment(line)) {
+	            			if(!ContainsOpeningComment(line)) {
+	            				ListCode.add(CodeOpeningComment(line));
+	            			}
+	            			if(!ContainsClosingComment(line)) {
+	            				ListCode.add(CodeClosingComment(line));
+	            			}
+	            		}
+	            		else if (NotFinishedComment(line)) {
+	            			JumpComment(line,ListCode,reader);
+	            		}
+	            		if(!ListCode.isEmpty()) {
+	            			for(String code : ListCode) {
+	            				IsAll(ListImportFromFile,code);
+	            			}
+	            		}
 	            	}
-	            	else if(IsCatch(line)) {
-	            		//System.out.println(line);
-	            		ListImportFromFile.add(CatchException(line));
-	            		//System.out.println(CatchException(line));
-	            	}
+	            		IsAll(ListImportFromFile,line);
 	            	for(ImportStatus Import : ImportList) {
 	            		for(String ImportFile :  ListImportFromFile) {
 	            			if(Import.ImportName.substring(Import.ImportName.lastIndexOf(".")+1).equals(ImportFile)) {
