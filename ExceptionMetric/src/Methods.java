@@ -11,7 +11,7 @@ public class Methods {
 	//fonction tedi arraylist ta3 mo9bil w tbedel les flag 
 	static ArrayList<ExceptionInfo> fetchException (File fichier){
 		ArrayList<ExceptionInfo> list = new ArrayList<>();
-		
+		boolean b=false;
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(fichier))){
 			
@@ -19,7 +19,7 @@ public class Methods {
 			while ((line = reader.readLine())!= null) {
 				line =line.trim();
 				RemoveQoute(line);
-				if (!line.isEmpty() && !IsComments(line)) {
+				if (!line.isEmpty() && !isComment(line,b)) {
 					if(line.contains("/*")) {
 						ArrayList<String> com = new ArrayList<>();
 						com.add(line.substring(0,line.indexOf("/*")));
@@ -145,15 +145,41 @@ public class Methods {
 	     return line.substring(line.indexOf("*/")+2);
 	     }	
 	 } 
-	 static boolean IsComments(String Line) {
-	       
-		   	boolean b  = false;
-		   	if(Line.startsWith("//")  ) {
-		   		b = true;
-		   	}
-		   	
-		   	return b;
-		   }
+	public static boolean isComment(String line, boolean insideMultiLineComment) {
+        // Removing leading and trailing white spaces for better detection
+        line = line.trim();
+        
+        // If we are already inside a multi-line comment
+        if (insideMultiLineComment) {
+            // Check if the multi-line comment ends on this line
+            if (line.endsWith("*/")) {
+                // We've reached the end of the multi-line comment
+                return true;
+            } else {
+                // The multi-line comment continues on the next line
+                return true; // Return true because we're still in a comment
+            }
+        }
+        
+        // Checking for single-line comment
+        if (line.startsWith("//")) {
+            return true;
+        }
+        
+        // Checking for multi-line comment
+        if (line.startsWith("/*")) {
+            // Check if the multi-line comment ends on the same line
+            if (line.endsWith("*/")) {
+                return true;
+            } else {
+                // Multi-line comment starts but doesn't end on the same line,
+                // so we set the flag to indicate we're inside a multi-line comment
+                return true;
+            }
+        }
+
+        return false;
+    }
 	 
 	 static boolean IsQoute(String Line) {
 			Line = Line.trim();
