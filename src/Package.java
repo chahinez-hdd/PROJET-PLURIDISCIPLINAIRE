@@ -21,7 +21,7 @@ import java.util.zip.ZipInputStream;
 //TODO
 /* code formatter
  * test throw and throws
- * Countline and fetchimport update
+ * Update FetchImport
  * recursive browse 
  */
 
@@ -83,8 +83,6 @@ public class Package {
 		return Line.contains("/*") && !Line.contains("*/") ;
 	}
 	
-	
-	
 	static boolean ContainsOpeningComment(String Line) {
 		return Line.startsWith("/*");
 	}
@@ -108,12 +106,12 @@ public class Package {
 		if(!ContainsOpeningComment(Line)) {
 			List.add(CodeOpeningComment(Line));
 		}
-		System.out.println(Line);
+		//System.out.println(Line);
 		try {
 			while ((Line = reader.readLine()) != null) { 
 			Line = Line.trim();
-			RemoveQoute(Line);
-			System.out.println(Line);
+			Line=RemoveQoute(Line);
+			//System.out.println(Line);
 			if(Line.contains("*/")) {
 				break;
 			}
@@ -196,19 +194,33 @@ public class Package {
 		String Line;
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
-	            	if(!Line.isEmpty() && !IsCommentOnlyCompleted(Line)) {
+	            	if(!Line.isBlank() && !IsCommentOnlyCompleted(Line)) {
                     Line = Line.trim();
                     Line =  RemoveQoute(Line);
 	                if(!IsBracket(Line)) {
                     if(ContainsComment(Line) ) {
 	                	++NbLine;
 	                }
-                    else if(FinishedComment(Line)) {
-                    	
+                    else if(FinishedComment(Line) ) {
+                    	if(!ContainsClosingComment(Line) || !ContainsOpeningComment(Line)) {
+                    		
+                    		++NbLine;
+                    	}
                     }
+                    else if(NotFinishedComment(Line)) {
+                    	NbLine+=JumpComment(Line,reader);
+                    }
+                    else {
+                    	
+                    
+                    	++NbLine;
+                    }
+                    
 	                }
+	                
                     
 	            	}
+	        
 	            }
 	        } catch (IOException e) {
 	            e.printStackTrace();
@@ -217,15 +229,16 @@ public class Package {
 		return NbLine;
 	}
 	
-	static void JumpComment (String Line,int Cmp,BufferedReader reader) {
+	static int JumpComment (String Line,BufferedReader reader) {
+		int NbLine = 0;
 		if(!ContainsOpeningComment(Line)) {
-	
+	    ++NbLine;
 		}
 		System.out.println(Line);
 		try {
 			while ((Line = reader.readLine()) != null) { 
 			Line = Line.trim();
-			RemoveQoute(Line);
+			Line = RemoveQoute(Line);
 			System.out.println(Line);
 			if(Line.contains("*/")) {
 				break;
@@ -236,15 +249,15 @@ public class Package {
 			
 		}
 		if(!ContainsClosingComment(Line)) {
-	
+	   ++NbLine;
 		}
+		return NbLine;
 	}
 	
 
 	
 	//Method To Remove Comment From Line
 	static String RemoveComment(String line) {
-		 
 	     int index = line.indexOf("//");
 	     line = line.substring(0,index);
 		 
@@ -253,9 +266,7 @@ public class Package {
 	
 	//Method To Know If Line Contains Comment
 	 static boolean ContainsComment(String Line) {	
-	
 		 return Line.contains("//") ; 
-		
 	 }
 	 
 	 
@@ -452,16 +463,18 @@ public class Package {
 		 	 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            String line;
 	            while ((line = reader.readLine()) != null) {
-	            	line = line.trim();
+	            line = line.trim();
 	            line =  RemoveQoute(line);
 	                ArrayList<String> ListImportFromFile = new ArrayList<String>();
-	            	if(!line.isEmpty() && !IsCommentOnlyCompleted(line) && !IsImport(line)) {
+	                ArrayList<String> ListCode=new ArrayList<String>();
+	                
+	                if(!line.isBlank() && !line.isEmpty() && !IsCommentOnlyCompleted(line) && !IsImport(line)) {
 	            	if(ContainsComment(line)) {
 	            	//	System.out.println(line);
 	            		line = RemoveComment(line);
 	            	}
 	            	else {
-	            		ArrayList<String> ListCode=new ArrayList<String>();
+	            		
 	            		if(FinishedComment(line)) {
 	            			if(!ContainsOpeningComment(line)) {
 	            				ListCode.add(CodeOpeningComment(line));
@@ -479,7 +492,10 @@ public class Package {
 	            			}
 	            		}
 	            	}
+	            	
+	            	if(ListCode.size()==0) {
 	            		IsAll(ListImportFromFile,line);
+	            	}
 	            	for(ImportStatus Import : ImportList) {
 	            		for(String ImportFile :  ListImportFromFile) {
 	            			if(Import.ImportName.substring(Import.ImportName.lastIndexOf(".")+1).equals(ImportFile)) {
