@@ -20,8 +20,8 @@ import java.util.zip.ZipInputStream;
 
 //TODO
 /* code formatter
- * test throw and throws and comment
- * organize my method
+ * test throw and throws
+ * Countline and fetchimport update
  * recursive browse 
  */
 
@@ -68,24 +68,6 @@ public class Package {
 	}
 	
 	
-	 static String RemoveComment2(String Line) {
-		 String line = Line;
-	     int index = line.indexOf("\\\\");
-	     line = line.substring(0,index);
-			return line;
-	 } 
-	
-	 static boolean ContainsComment2(String Line) {
-		 boolean b = false;
-		 String line = Line;
-		 if(IsQoute(line)) {
-			 RemoveQoute(line);
-		 }
-		 if(line.contains("\\\\") ) {
-			 b = true;
-		 }
-		 return b;
-	 }
 	
 	         /*ffffffffffffffffffffffff
 	 * 
@@ -126,10 +108,12 @@ public class Package {
 		if(!ContainsOpeningComment(Line)) {
 			List.add(CodeOpeningComment(Line));
 		}
+		System.out.println(Line);
 		try {
 			while ((Line = reader.readLine()) != null) { 
 			Line = Line.trim();
 			RemoveQoute(Line);
+			System.out.println(Line);
 			if(Line.contains("*/")) {
 				break;
 			}
@@ -212,15 +196,18 @@ public class Package {
 		String Line;
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
-	            	if(!Line.isEmpty() && !IsComments(Line)) {
-	            	
-	            		 RemoveQoute(Line);
-	            	
-	                RemoveComment(Line);
-	            	
-	                if(!IsBracket(Line)) {          	
+	            	if(!Line.isEmpty() && !IsCommentOnlyCompleted(Line)) {
+                    Line = Line.trim();
+                    Line =  RemoveQoute(Line);
+	                if(!IsBracket(Line)) {
+                    if(ContainsComment(Line) ) {
 	                	++NbLine;
 	                }
+                    else if(FinishedComment(Line)) {
+                    	
+                    }
+	                }
+                    
 	            	}
 	            }
 	        } catch (IOException e) {
@@ -230,38 +217,49 @@ public class Package {
 		return NbLine;
 	}
 	
+	static void JumpComment (String Line,int Cmp,BufferedReader reader) {
+		if(!ContainsOpeningComment(Line)) {
 	
+		}
+		System.out.println(Line);
+		try {
+			while ((Line = reader.readLine()) != null) { 
+			Line = Line.trim();
+			RemoveQoute(Line);
+			System.out.println(Line);
+			if(Line.contains("*/")) {
+				break;
+			}
+			}
+		}
+		catch(IOException e) {
+			
+		}
+		if(!ContainsClosingComment(Line)) {
+	
+		}
+	}
+	
+
 	
 	//Method To Remove Comment From Line
-	static void RemoveComment(String line) {
-		 if(ContainsComment(line)) {
-	     int index = line.indexOf("\\\\");
+	static String RemoveComment(String line) {
+		 
+	     int index = line.indexOf("//");
 	     line = line.substring(0,index);
-		 }
-			
+		 
+			return line;
 	 } 
 	
 	//Method To Know If Line Contains Comment
-	 static boolean ContainsComment(String Line) {
-		 boolean b = false;
-		 String line = Line;
-		 if(line.contains("\\\\") ) {
-			 b = true;
-		 }
-		 return b;
+	 static boolean ContainsComment(String Line) {	
+	
+		 return Line.contains("//") ; 
+		
 	 }
 	 
 	 
-	 //Method To Know If Line Comment Only Line
-   static boolean IsComments(String Line) {
-       
-   	boolean b  = false;
-   	if(Line.startsWith("//") || Line.startsWith("/*") || Line.startsWith("*")||Line.startsWith("*/")) {
-   		b = true;
-   	}
-   	
-   	return b;
-   }
+	
    
    //Method That Detect Qoute In Line
    static boolean IsQoute(String Line) {
@@ -270,7 +268,7 @@ public class Package {
 	}
    
    //Method To RemoveQoute From Line
-   static void RemoveQoute(String line) {
+   static String RemoveQoute(String line) {
    	String qoute;
    	if(IsQoute(line)) {
    	while(line.contains("\"")) {
@@ -287,7 +285,7 @@ public class Package {
    		
    	}
    	}
-   	
+   	return line;
    }
    
    
@@ -434,9 +432,9 @@ public class Package {
     		  //System.out.println(ListImportFromFile);
     	}
     	else if(IsNew(line)) {
-    		System.out.println(line);
+    		//System.out.println(line);
     		ExtractNewClassNames(line,ListImportFromFile);
-    		System.out.println(ListImportFromFile);
+    	//	System.out.println(ListImportFromFile);
     	}
     	else if(IsCatch(line)) {
     		//System.out.println(line);
@@ -455,11 +453,12 @@ public class Package {
 	            String line;
 	            while ((line = reader.readLine()) != null) {
 	            	line = line.trim();
-	                RemoveQoute(line);
+	            line =  RemoveQoute(line);
 	                ArrayList<String> ListImportFromFile = new ArrayList<String>();
 	            	if(!line.isEmpty() && !IsCommentOnlyCompleted(line) && !IsImport(line)) {
-	            	if(ContainsComment2(line)) {
-	            		line = RemoveComment2(line);
+	            	if(ContainsComment(line)) {
+	            	//	System.out.println(line);
+	            		line = RemoveComment(line);
 	            	}
 	            	else {
 	            		ArrayList<String> ListCode=new ArrayList<String>();
