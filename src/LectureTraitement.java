@@ -9,7 +9,7 @@ public class LectureTraitement {
             if (fichier.isFile()) {
                 System.out.println("Fichier: " + fichier.getName());
                 // Vérifier l'extension du fichier
-                if (fichier.getName().endsWith(".txt")) {
+                if (fichier.getName().endsWith(".java")) {
                     lireContenuFichier(fichier);
                 }
             } else if (fichier.isDirectory()) {
