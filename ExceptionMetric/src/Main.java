@@ -8,7 +8,7 @@ public class Main {
 				+ "a=10;";
 		boolean b= false;
 		System.out.println(Methods.isComment(path, b));
-		while(!Methods.isComment(path,b)) {
+		while(Methods.isComment(path,b)) {
 			System.out.println(Methods.isComment(path,b));
 		}
 

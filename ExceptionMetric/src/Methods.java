@@ -18,24 +18,29 @@ public class Methods {
 			String line;
 			while ((line = reader.readLine())!= null) {
 				line =line.trim();
-				RemoveQoute(line);
-				if (!line.isEmpty() && !isComment(line,b)) {
-					if(line.contains("/*")) {
-						ArrayList<String> com = new ArrayList<>();
-						com.add(line.substring(0,line.indexOf("/*")));
-						if (!line.contains("*/")) {
-							 if (JumpComment(reader)!=null) {
-								 com.add(JumpComment(reader)); 
-							 }
-							
-						}else {
-							line.replace(" ", "");
-							 if(line.indexOf("*/")+2!=-1) {
-								 com.add(line.substring(line.indexOf("*/")+2));
-							 }
-							
-						}
-						
+				line=RemoveQoute(line);
+				if (!line.isEmpty() && !IsCommentOnlyCompleted(line)) {
+					if (ContainsComment(line)) {
+						line=RemoveComment(line);
+					}
+					else {
+						ArrayList<String> Code=new ArrayList<>();
+						if(FinishedComment(line)) {
+	            			if(!ContainsOpeningComment(line)) {
+	            				Code.add(CodeOpeningComment(line));
+	            			}
+	            			if(!ContainsClosingComment(line)) {
+	            				Code.add(CodeClosingComment(line));
+	            			}
+	            		}
+						else if (NotFinishedComment(line)) {
+	            			JumpComment(line,Code,reader);
+	            		}
+	            		if(!Code.isEmpty()) {
+	            			for(String code : Code) {
+	            				
+	            			}
+	            		}
 					}
 					
 				}
@@ -107,44 +112,63 @@ public class Methods {
 		int BS = line.indexOf(" ");
 		return line.substring(0,BS);
 	}
-	 static boolean ContainsComment(String Line) {
-		 boolean b = false;
-		 String line = Line;
-		 if(line.contains("\\\\") ) {
-			 b = true;
-		 }
-		 return b;
-		 
+	static boolean ContainsComment(String Line) {	
+		
+		 return Line.contains("//") ; 
+		
 	 }
+	 static boolean ContainsOpeningComment(String Line) {
+			return Line.startsWith("/*");
+		}
+	 static boolean ContainsClosingComment(String Line) {
+			String line = Line.replaceAll(" ", "");
+			return line.endsWith("*/");
+		}
+	 static String CodeOpeningComment(String Line) {
+			return Line.substring(0,Line.indexOf("/*"));
+		}
+	 static String CodeClosingComment(String Line) {
+			return Line.substring(Line.indexOf("*/")+2);
+		}
 	 
-	static String JumpComment(BufferedReader read) {
-	     String line=null;
-	     try {
-			while((line=read.readLine())!=null ) {
-				
-				line = line.trim();
-				RemoveQoute(line);
-				if(line.contains("*/")) {
+	 
+	 static boolean FinishedComment(String Line) {
+		 Line = Line.trim();
+		return Line.contains("/*") && Line.contains("*/") ;	 
+	 }
+	static boolean NotFinishedComment(String Line) {
+		Line = Line.trim();
+		return Line.contains("/*") && !Line.contains("*/") ;
+	}
+	
+	static boolean IsCommentOnlyCompleted(String Line) {
+		Line = Line.trim();
+	    String singleLineCommentPattern = "//.*"; 
+	    String multiLineCommentPatternCompleted = "/\\*((?!(\\*/))[^\\n]|\\n)*(\\*/)";
+	return Line.matches(multiLineCommentPatternCompleted)||Line.matches(singleLineCommentPattern);
+	}
+	 static void JumpComment (String Line,ArrayList<String> List,BufferedReader reader) {
+			if(!ContainsOpeningComment(Line)) {
+				List.add(CodeOpeningComment(Line));
+			}
+			System.out.println(Line);
+			try {
+				while ((Line = reader.readLine()) != null) { 
+				Line = Line.trim();
+				Line=RemoveQoute(Line);
+				System.out.println(Line);
+				if(Line.contains("*/")) {
 					break;
 				}
+				}
+			}
+			catch(IOException e) {
 				
-				 
-			 }
-			
-		} catch(IOException e) {
-			
-			e.printStackTrace();
+			}
+			if(!ContainsClosingComment(Line)) {
+				List.add(CodeClosingComment(Line));
+			}
 		}
-	     line.trim();
-	     line.replace(" ","");
-	     line.indexOf("*/");
-	     int n= line.indexOf("*/")+2;
-	     if (n==-1) {
-	    	 return null;
-	     }else {
-	     return line.substring(line.indexOf("*/")+2);
-	     }	
-	 } 
 	public static boolean isComment(String line, boolean insideMultiLineComment) {
         // Removing leading and trailing white spaces for better detection
         line = line.trim();
@@ -186,7 +210,7 @@ public class Methods {
 			return Line.contains("\"");
 		}
 	 
-	 static void RemoveQoute(String line) {
+	 static String RemoveQoute(String line) {
 		   	String qoute;
 		   	if(IsQoute(line)) {
 		   	while(line.contains("\"")) {
@@ -199,18 +223,21 @@ public class Methods {
 		   	        }
 		   		  qoute = line.substring(BI,BS+1);
 		   		 line = line.replaceAll(Pattern.quote(qoute), "");
+		   		 
 		   		
 		   		
-		   	}
-		   	}
+		   							}
+		   				}
+		   	return line;
 		   	
 		   }
-	 static void RemoveComment(String line) {
-		 if(ContainsComment(line)) {
-	     int index = line.indexOf("\\\\");
+	 static String RemoveComment(String line) {
+		 
+	     int index = line.indexOf("//");
 	     line = line.substring(0,index);
-		 }
-			
+		 
+			return line;
 	 } 
+	 
 
 }
