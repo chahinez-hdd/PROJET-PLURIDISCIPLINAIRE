@@ -14,16 +14,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipEntry;/*
+sdsds
+*/import java.util.zip.ZipInputStream;
 
 
 //TODO
 /* code formatter
- * test throw and throws
- * Update FetchImport
- * recursive browse 
- */
+* recursive browse 
+* Asterix
+*/
 
 
 public class Package {
@@ -452,6 +452,12 @@ public class Package {
     		ListImportFromFile.add(CatchException(line));
     		//System.out.println(CatchException(line));
     	}
+    	else if(IsThrow(line)) {
+    		ListImportFromFile.add(ThrowException(line));
+    	}
+    	else if(IsThrows(line)) {
+    		ListImportFromFile.add(ThrowsException(line));
+    	}
     	else if (IsVariable(line)) {
     		ExtractVarClassNames(line,ListImportFromFile);
     	}
@@ -521,13 +527,49 @@ public class Package {
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
 	            	Line = Line.trim();
-	            	if(IsImport(Line)) {
-	            		int index = Line.indexOf(';');
-	            		ImportList.add(new ImportStatus(Line.substring(7, index),0));
-	            		
-	            	}
-	            	else if (!Line.isEmpty()){
-	            		break;
+	            	Line = RemoveQoute(Line);
+	            	ArrayList<String> ListCode=new ArrayList<String>();
+	            	if(!Line.isBlank() && !Line.isEmpty() && !IsCommentOnlyCompleted(Line)) {
+	            		if(ContainsComment(Line)) {
+	    	            	//System.out.println(line);
+	    	            		Line = RemoveComment(Line);
+	    	            	}
+	            		else {
+	            			if(FinishedComment(Line)) {
+		            			if(!ContainsOpeningComment(Line)) {
+		            				ListCode.add(CodeOpeningComment(Line));
+		            			}
+		            			if(!ContainsClosingComment(Line)) {
+		            				ListCode.add(CodeClosingComment(Line));
+		            			}
+		            		}
+	            			else if (NotFinishedComment(Line)) {
+		            			JumpComment(Line,ListCode,reader);
+		            		}
+
+	            			if(!ListCode.isEmpty()) {
+	            				for(String code : ListCode) {
+	            					if(IsImport(code)) {
+	            	            		int index = code.indexOf(';');
+	            	            		ImportList.add(new ImportStatus(code.substring(7, index),0));
+	            	            		
+	            	            	}
+	            					else {
+	            						break;
+	            					}
+	            				}
+	            			}
+	            		}
+	            		if(ListCode.isEmpty()) {
+	            			if(IsImport(Line)) {
+        	            		int index = Line.indexOf(';');
+        	            		ImportList.add(new ImportStatus(Line.substring(7, index),0));
+        	            		
+        	            	}
+	            			else {
+	            				break;
+	            			}
+	            		}
 	            	}
 	            }
 	        } catch (IOException e) {
