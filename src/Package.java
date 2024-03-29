@@ -20,9 +20,13 @@ sdsds
 
 
 //TODO
-/* code formatter
-* recursive browse 
-* Asterix
+/* code formatter 6(most likley no)
+ * isvar update(acess modfier , final , static) 
+* recursive browse , make it choice to use metric, nested Package 1
+* IsReturn 3
+* method. import 4                                                                 
+* Asterix 5
+* javafx 4
 */
 
 
@@ -177,10 +181,12 @@ public class Package {
 	
 	
   //Method to know If Line Is A Method Prototype	
-	static boolean IsMethode(String Line) {
-	    return Line.matches("(?!else\\s+if\\s*\\()\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\)\\s*(;|\\{)?\\s*");
-	}
-	
+  static boolean IsMethode(String Line) {
+	String ThrowsPattern = "(\\s*throws\\s+\\w+)?"; // Making the throws clause optional
+	String MethodPattern = "(?!return\\s+)(?!else\\s+if\\s*\\()\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\) " + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
+	String ConstructorPattern = "(?!while\\s*\\()(?!catch\\s*\\()(?!for\\s*\\()(?!if\\s*\\()(?!return\\s+)(?!else\\s+if\\s*\\()\\w*\\s*\\w+\\s*\\([^()]*\\)" + ThrowsPattern + "\\s*(\\{|\\{\\s*\\})?\\s*";
+	return Line.matches(MethodPattern) || Line.matches(ConstructorPattern);
+}
 	//Method to Know If Line Is Bracket Only Line
 	static boolean IsBracket(String Line) {
 		String line = Line;
