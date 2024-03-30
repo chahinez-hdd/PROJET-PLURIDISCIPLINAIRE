@@ -64,7 +64,7 @@ public class RMSRCalculator {
         Boolean overloaed=false;
         int j=0;
         for (Method method2 : methods){
-            if(method2.getName()==method.getName()&& (j!=i) )
+            if(method2.getName()==method.getName()&& (j!=i) )//parametres differents
                 overloaed=true;
             j++;
         }
@@ -79,6 +79,8 @@ public class RMSRCalculator {
         }
         return cpt;
     }
+
+
 
   
 }
