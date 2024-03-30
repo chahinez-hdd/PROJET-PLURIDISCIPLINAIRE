@@ -20,13 +20,10 @@ sdsds
 
 
 //TODO
-/* code formatter 6(most likley no)
- * isvar update(acess modfier , final , static) 
-* recursive browse , make it choice to use metric, nested Package 1
-* IsReturn 3
-* method. import 4                                                                 
-* Asterix 5
-* javafx 4
+/* code formatter 4(most likley no)
+* recursive browse , make it choice to use metric, nested Package 1                                             
+* Asterix 2
+* javafx 3
 */
 
 
@@ -135,33 +132,45 @@ public class Package {
 	    String multiLineCommentPatternCompleted = "/\\*((?!(\\*/))[^\\n]|\\n)*(\\*/)";
 	return Line.matches(multiLineCommentPatternCompleted)||Line.matches(singleLineCommentPattern);
 	}
-	
-    //Detect If Line Is Variable
-	static boolean IsVariable(String line) {
-	    String variablePattern = "\\b\\w+\\b\\s+\\w+\\s*(=\\s*.+)?;?";
-	    String ArrayPattern="\\w+\\s*(\\[\\s*\\]\\s*){1,2}\\w+\\s*(=\\s*.+)?;?";
-	    String CollectionPattern="\\w+\\s*\\<[\\s\\S]+?>\\s*\\w+\\s*(=\\s*.+)?;?";
-	    return line.matches(variablePattern) || line.matches(CollectionPattern) || line.matches(ArrayPattern);
-	}
-	
-	
-	//Fetch Class Name From Var Line
-	static void ExtractVarClassNames(String VarLine , ArrayList<String> classNames) {
-	    Pattern pattern = Pattern.compile("\\s*(\\w+)\\s*(?=[\\[<>])|(?<=[<])\\s*(\\w+)|^(\\w+)");
-	    Matcher matcher = pattern.matcher(VarLine);
-	    while (matcher.find()) {
-	        String className = matcher.group(1);
-	       if(className==null) {
-	    	   className = matcher.group(2);
-	    	   if(className==null) {
-	    		   className = matcher.group(3);
-	    	   }
-	    	   }
-	        classNames.add(className);
-	    }
-	}
-	
-	
+	 //Detect If Line Is Variable
+	 static boolean IsVariable(String line) {
+		String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
+		 String PattrneStatic="(?:static\\s+)?";
+		 String PatterneFinal="(?:final\\s+)?";
+		 String variablePattern = PattrneAcessModfiers+PattrneStatic+PatterneFinal+"(?!return\\s+)\\w+\\s+\\w+\\s*(=\\s*.+)?;?";
+		 String ArrayPattern= PattrneAcessModfiers+PattrneStatic+PatterneFinal+"\\w+\\s*(\\[\\s*\\]\\s*){1,2}\\w+\\s*(=\\s*.+)?;?";
+		 String CollectionPattern=  PattrneAcessModfiers+PattrneStatic+PatterneFinal+"\\w+\\s*\\<[\\s\\S]+?>\\s*\\w+\\s*(=\\s*.+)?;?";
+		 return line.matches(variablePattern) || line.matches(CollectionPattern) || line.matches(ArrayPattern);
+	 }
+	 
+	 
+	 //Fetch Class Name From Var Line
+	 static void ExtractVarClassNames(String VarLine , ArrayList<String> classNames) {
+		 String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
+		 String PattrneStatic="(?:static\\s+)?";
+		 String PatterneFinal="(?:final\\s+)?";
+		 Pattern PatterneVar = Pattern.compile(PattrneAcessModfiers+PattrneStatic+PatterneFinal+"\\s*(\\w+)\\s*(?=[\\[<>])|(?<=[<])\\s*(\\w+)|"+PattrneAcessModfiers+PattrneStatic+PatterneFinal+"(\\w+)\\s+\\w+|(\\w+)\\.");
+		 Matcher matcher1 = PatterneVar.matcher(VarLine);
+		 
+		 while (matcher1.find()) {
+			  String className = matcher1.group(1);
+				if(className==null) {
+					className = matcher1.group(2);
+					if(className==null) {
+						className = matcher1.group(3);
+					}
+					if(className==null) {
+						className=matcher1.group(4);
+					}
+					
+					}
+ 
+			 classNames.add(className);
+		 }
+	 }
+	 
+	 
+ 
 	
 	
 	
