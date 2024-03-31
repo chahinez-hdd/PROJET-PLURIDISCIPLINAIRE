@@ -1,0 +1,8 @@
+.root {
+    -fx-background-color: white;
+}
+
+
+#ErrorLabelPath{
+	 -fx-font-size: 14pt;
+}
