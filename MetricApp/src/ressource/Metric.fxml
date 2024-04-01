@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" fx:controller="application.MetricController">
    <top>
-      <Label alignment="CENTER" text="Java Project Structure" BorderPane.alignment="CENTER">
+      <Label alignment="CENTER" text="Java Project Structure">
          <font>
             <Font size="30.0" />
          </font>
       </Label>
    </top>
+   <center>
+      <TreeView fx:id="treeView" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>

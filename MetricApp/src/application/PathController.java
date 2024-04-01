@@ -53,19 +53,18 @@ public class PathController {
         ErrorLabelPath.setText(text);
     }
 
-    private void openMetricScene(String PathProject) {
+    private void openMetricScene(String pathProject) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Metric.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/MetricJava.fxml"));
             Parent root = fxmlLoader.load();
+            MetricController metricController = fxmlLoader.getController();
+            metricController.initialize(pathProject);
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ArrayList<Package> ListPackage = new ArrayList<Package>();
-		File ProjectFile = new File(PathProject);
-		File[] SrcFile =ProjectFile.listFiles();
-		Java.FetchSrcJavaFile(SrcFile,ListPackage);
     }
+
 }
