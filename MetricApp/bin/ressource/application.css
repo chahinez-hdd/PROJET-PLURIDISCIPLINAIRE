@@ -23,6 +23,38 @@
  -fx-cursor :hand;
 }
 
+.root-node-label{
+	-fx-font-size:45px;
+	-fx-text-fill:red;
+}
+
+.root-node-svg{
+	-fx-fill:lightblue;
+}
+
+
+.parent-node-label{
+	-fx-font-size:35px;
+}
+
+.parent-node-svg{
+	-fx-fill:#A027FF;
+ }
+
+
+
+.leaf-node-label{
+	-fx-font-size:20px;
+}
+
+.leaf-node-svg{
+	-fx-fill:#FFBE27;
+	-fx-scale-x:2.5;
+	-fx-scale-y:2.5;
+}
+
+
+
 
 
 

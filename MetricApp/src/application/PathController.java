@@ -60,8 +60,8 @@ public class PathController {
             MetricController metricController = fxmlLoader.getController();
             metricController.initialize(pathProject);
             Scene scene = new Scene(root);
-           // String css = this.getClass().getResource("/ressource/application.css").toExternalForm();
-            //scene.getStylesheets().add(css);
+            String css = this.getClass().getResource("/ressource/application.css").toExternalForm();
+            scene.getStylesheets().add(css);
             Stage stage = new Stage();
             stage.setScene(scene);
             stage.show();
