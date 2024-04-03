@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ public class Methods {
 	//fonction tedi arraylist ta3 mo9bil w tbedel les flag 
 	static ArrayList<ExceptionInfo> fetchException (File fichier){
 		ArrayList<ExceptionInfo> list = new ArrayList<>();
-		boolean b=false;
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(fichier))){
 			
@@ -37,11 +35,48 @@ public class Methods {
 	            			JumpComment(line,Code,reader);
 	            		}
 	            		if(!Code.isEmpty()) {
-	            			for(String code : Code) {
+	            			for(String x : Code) {
+	            				if(IsThrows(x)) {
+	            					list.add(new ExceptionInfo(ThrowsException(x),false,false));
+	            				}else if(IsThrow(x)) {
+	            					list.add(new ExceptionInfo(ThrowException(x),false,false));
+	            					
+	            				}else if(IsCatch(x)) {
+	            					list.add(new ExceptionInfo(CatchException(x),false,false));
+	            				}
 	            				
 	            			}
 	            		}
 					}
+					if(IsThrows(line)) {
+    					list.add(new ExceptionInfo(ThrowsException(line),false,false));
+    				}else if(IsThrow(line)) {
+    					list.add(new ExceptionInfo(ThrowException(line),false,false));
+    					
+    				}else if(IsCatch(line)) {
+    					list.add(new ExceptionInfo(CatchException(line),false,false));
+    				}
+					
+					for (ExceptionInfo exception :list) {
+						String tmp = exception.ExceptionName;
+						
+						while(!tmp.equals("Exception") && !tmp.equals("RuntimeException")) {
+							try {
+								Class<?> exceptionClass = Class.forName(exception.ExceptionName);
+								exceptionClass = exceptionClass.getSuperclass();
+								tmp = exceptionClass.getName();
+							}catch (ClassNotFoundException e) {
+								e.printStackTrace();
+							}
+						}
+						if (tmp.equals("Exception")) {
+							exception.checkedStatus = true;
+							
+						}else if (tmp.equals("RuntimeException")) {
+							exception.checkedStatus = false;
+						}
+					}
+    				
 					
 				}
 				
