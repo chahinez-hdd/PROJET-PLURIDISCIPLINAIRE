@@ -44,15 +44,18 @@
 
 
 .leaf-node-label{
-	-fx-font-size:20px;
+	-fx-font-size:25px;
 }
 
 .leaf-node-svg{
-	-fx-fill:#FFBE27;
-	-fx-scale-x:2.5;
-	-fx-scale-y:2.5;
+	-fx-fill:#1850F1;
 }
 
+/* Remove blue background on focused tree cells */
+.tree-cell:focused {
+    -fx-background-color:  transparent;
+    -fx-border-color:blue;
+}
 
 
 

@@ -59,7 +59,7 @@ public class MetricController {
             packageItem.getChildren().add(subPackageItem);
         }
         for (FileInfo fileInfo : pkg.FileList) {
-            packageItem.getChildren().add(new TreeItem<>(new TreeItemData(fileInfo.file.getName(),"M 10.5 8 v 4 h -1 v -1 h -1 v 1.5 c 0 0.28 0.22 0.5 0.5 0.5 h 2 c 0.28 0 0.5 -0.22 0.5 -0.5 V 8 h -1")));
+            packageItem.getChildren().add(new TreeItem<>(new TreeItemData(fileInfo.file.getName(),"M 2 1.75 C 2 0.784 2.784 0 3.75 0 h 6.586 c 0.464 0 0.909 0.184 1.237 0.513 l 2.914 2.914 c 0.329 0.328 0.513 0.773 0.513 1.237 v 9.586 A 1.75 1.75 0 0 1 13.25 16 h -9.5 A 1.75 1.75 0 0 1 2 14.25 Z m 1.75 -0.25 a 0.25 0.25 0 0 0 -0.25 0.25 v 12.5 c 0 0.138 0.112 0.25 0.25 0.25 h 9.5 a 0.25 0.25 0 0 0 0.25 -0.25 V 6 h -2.75 A 1.75 1.75 0 0 1 9 4.25 V 1.5 Z m 6.75 0.062 V 4.25 c 0 0.138 0.112 0.25 0.25 0.25 h 2.688 l -0.011 -0.013 l -2.914 -2.914 l -0.013 -0.011 Z")));
         }
         return packageItem;
     }
