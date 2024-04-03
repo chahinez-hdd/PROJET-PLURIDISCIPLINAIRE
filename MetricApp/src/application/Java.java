@@ -95,7 +95,7 @@ public class Java {
         //loop to fetch java file of package
 		for(File file : FileList) {
         	if( file.isFile() && file.getName().endsWith(".java")) {
-        		ListInfoFile.add(new FileInfo(file.getName(),0,null));
+        		ListInfoFile.add(new FileInfo(file,0,null));
         	}
         	
         }
@@ -116,7 +116,7 @@ public class Java {
 		ArrayList<FileInfo>ListInfoFile=new ArrayList<FileInfo>();
 		for(File file : SrcFile) {
 			if(file.getName().endsWith(".java")) {
-				ListInfoFile.add(new FileInfo(file.getName(),0,null));
+				ListInfoFile.add(new FileInfo(file,0,null));
 			}
 		}
 		ListPackage.add(new Package("Default Package",ListInfoFile));
@@ -154,7 +154,7 @@ public class Java {
 	            for (int i = 0; i <= depth; i++) {
 	                System.out.print("|  ");
 	            }
-	            System.out.println("|-- " + fileInfo.FileName);
+	            System.out.println("|-- " + fileInfo.file.getName());
 	        }
 
 	        // Recursively print sub-packages

@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 
@@ -34,6 +35,17 @@ public class MetricController {
             rootItem.getChildren().add(packageItem);
         }
         setTreeViewStyle();
+        
+        treeView.setOnKeyPressed(event -> {
+            TreeItem<TreeItemData> selectedItem = treeView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
+                if (selectedItem.isLeaf()) {
+                    // Handle leaf node selection here
+                    System.out.println("Leaf node selected: " + selectedItem.getValue().GetLabel());
+                    // You can perform any action you want here
+                }
+            }
+        });
     }
 
     
@@ -47,7 +59,7 @@ public class MetricController {
             packageItem.getChildren().add(subPackageItem);
         }
         for (FileInfo fileInfo : pkg.FileList) {
-            packageItem.getChildren().add(new TreeItem<>(new TreeItemData(fileInfo.FileName,"M 10.5 8 v 4 h -1 v -1 h -1 v 1.5 c 0 0.28 0.22 0.5 0.5 0.5 h 2 c 0.28 0 0.5 -0.22 0.5 -0.5 V 8 h -1")));
+            packageItem.getChildren().add(new TreeItem<>(new TreeItemData(fileInfo.file.getName(),"M 10.5 8 v 4 h -1 v -1 h -1 v 1.5 c 0 0.28 0.22 0.5 0.5 0.5 h 2 c 0.28 0 0.5 -0.22 0.5 -0.5 V 8 h -1")));
         }
         return packageItem;
     }
@@ -62,6 +74,8 @@ public class MetricController {
     	});
 
     }
+   
+    
     public class CustomTreeCell extends TreeCell<TreeItemData> {
         private SVGPath svgPath;
         private Label label;
@@ -74,7 +88,7 @@ public class MetricController {
             this.hbox.setAlignment(Pos.CENTER_LEFT);
             setGraphic(hbox);
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            
+            setFocusTraversable(true); 
         }
 
         @Override
@@ -122,10 +136,18 @@ public class MetricController {
                     label.setText(null);
                 }
                 label.setPadding(new Insets(0, 0, 0, 10)); // Example padding: 10px on the right
-                //svgPath.setPadding(new Insets(0, 10, 0, 0)); // Example padding: 10px on the right
                 // Set the HBox as the graphic content
                 setGraphic(hbox);
             }
         }
-   }
+    }
+    
+    
+    
+
+
+
+        
+  
 }
+

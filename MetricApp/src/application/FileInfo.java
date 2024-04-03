@@ -1,13 +1,14 @@
 package application;
+import java.io.File;
 import java.util.ArrayList;
 
 public class FileInfo {
-	String FileName;
+	File file;
 	int FileNumberLine;
 	ArrayList<ImportStatus> FileImport = new ArrayList<ImportStatus>();
 
-	FileInfo(String FileName,int FileNumberLine,ArrayList<ImportStatus> FileImport)
-	{	this.FileName =FileName;
+	FileInfo(File file,int FileNumberLine,ArrayList<ImportStatus> FileImport)
+	{	this.file =file;
 		this.FileImport=FileImport;
 		this.FileNumberLine=FileNumberLine;
 	}
