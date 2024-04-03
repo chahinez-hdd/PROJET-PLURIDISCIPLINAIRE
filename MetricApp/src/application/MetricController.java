@@ -1,8 +1,13 @@
 package application;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
@@ -11,8 +16,10 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javafx.util.Callback;
@@ -42,13 +49,68 @@ public class MetricController {
                 if (selectedItem.isLeaf()) {
                     // Handle leaf node selection here
                     System.out.println("Leaf node selected: " + selectedItem.getValue().GetLabel());
-                    // You can perform any action you want here
+                    // Show a dialog with options
+                    String FilePath = RealPathConcat(getFileHierarchy(selectedItem),pathProject);
+                    System.out.println(FilePath);
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText("Leaf Node Actions");
+                    alert.setContentText("Choose an action to perform:");
+
+                    ButtonType buttonType1 = new ButtonType("Imports");
+                    ButtonType buttonType2 = new ButtonType("Line Code ");
+                    ButtonType buttonType3 = new ButtonType("Exception");
+                    ButtonType buttonTypeCancel = new ButtonType("Cancel");
+
+                    alert.getButtonTypes().setAll(buttonType1, buttonType2, buttonType3, buttonTypeCancel);
+
+                    alert.showAndWait().ifPresent(buttonType -> {
+                        if (buttonType == buttonType1) {
+                        	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Import.fxml"));
+                             Parent root = null;
+							try {
+								root = fxmlLoader.load();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+                             ImportController importController = fxmlLoader.getController();
+                             importController.initialize(FilePath);
+                             Scene scene = new Scene(root);
+                             String css = this.getClass().getResource("/ressource/Import.css").toExternalForm();
+                             scene.getStylesheets().add(css);
+                             Stage stage = new Stage();
+                             stage.setScene(scene);
+                             stage.show();
+                        } else if (buttonType == buttonType2) {
+                            // Perform action 2
+                        } else if (buttonType == buttonType3) {
+                            // Perform action 3
+                        }
+                    });
                 }
             }
         });
+        
     }
 
-    
+    String RealPathConcat(String FileHierachy , String JavaProjectPath) {
+    	if(FileHierachy.contains(File.separator+"Default Package"+File.separator)) {
+    		FileHierachy = FileHierachy.replace("Default Package"+File.separator, "");
+    	}
+    	FileHierachy = FileHierachy.replace("Src Folder", "");
+    	FileHierachy=JavaProjectPath+FileHierachy;
+    	return FileHierachy;
+    }
+
+    private String getFileHierarchy(TreeItem<TreeItemData> leafNode) {
+        StringBuilder hierarchy = new StringBuilder(leafNode.getValue().GetLabel());
+        TreeItem<TreeItemData> parent = leafNode.getParent();
+        while (parent != null) {
+            hierarchy.insert(0, parent.getValue().GetLabel() + File.separator);
+            parent = parent.getParent();
+        }
+        return hierarchy.toString();
+    }
 
 
     private TreeItem<TreeItemData> createTreeItem(Package pkg) {
