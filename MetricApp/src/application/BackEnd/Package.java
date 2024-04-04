@@ -50,6 +50,23 @@ public class Package {
 	 */
 
 	
+	public static boolean classExists(String asterixImport, String className) {
+	    String[] arrayPackage = {"java.util.", "java.util.regex.", "java.math.","java.net.","java.io.","com.sun.crypto.provider.","com.sun.security.ntlm."};
+	    
+	    for (String pkg : arrayPackage) {
+	        try {
+	            Class.forName(pkg + className);
+	            return true; // Return true if class is found
+	        } catch (ClassNotFoundException e) {
+	            // Class not found in this package, continue searching
+	        }
+	    }
+	    
+	    // None of the classes were found, return false
+	    return false;
+	}
+	
+	
     //Detect If Line Is Variable
    static boolean IsVariable(String line) {
 	   String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
