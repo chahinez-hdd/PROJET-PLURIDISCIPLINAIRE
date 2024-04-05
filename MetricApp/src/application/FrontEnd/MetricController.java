@@ -14,6 +14,8 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
@@ -32,6 +34,7 @@ public class MetricController {
     @FXML
     private TreeView<TreeItemData> treeView;
 
+
     public void initialize(String pathProject) {
         ArrayList<Package> listPackage = new ArrayList<>();
         File projectFile = new File(pathProject);
@@ -44,6 +47,7 @@ public class MetricController {
             TreeItem<TreeItemData> packageItem = createTreeItem(pkg);
             rootItem.getChildren().add(packageItem);
         }
+       
         setTreeViewStyle();
         
         treeView.setOnKeyPressed(event -> {
@@ -51,10 +55,10 @@ public class MetricController {
             if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
                 if (selectedItem.isLeaf()) {
                     // Handle leaf node selection here
-                 //   System.out.println("Leaf node selected: " + selectedItem.getValue().GetLabel());
+                  System.out.println("Leaf node selected: " + selectedItem.getValue().GetLabel());
                     // Show a dialog with options
                     String FilePath = RealPathConcat(getFileHierarchy(selectedItem),pathProject);
-                   // System.out.println(FilePath);
+                   System.out.println(FilePath);
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setHeaderText("Leaf Node Actions");
                     alert.setContentText("Choose an action to perform:");
@@ -108,9 +112,15 @@ public class MetricController {
                 }
             }
         });
+     
         
     }
-
+    
+    public TreeView<TreeItemData> getTreeView() {
+        return this.treeView;
+    }
+    
+  
     String RealPathConcat(String FileHierachy , String JavaProjectPath) {
     	if(FileHierachy.contains(File.separator+"Default Package"+File.separator)) {
     		FileHierachy = FileHierachy.replace("Default Package"+File.separator, "");

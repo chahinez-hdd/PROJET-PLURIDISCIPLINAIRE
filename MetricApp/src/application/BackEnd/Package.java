@@ -1,10 +1,8 @@
 package application.BackEnd;
 
 import java.io.BufferedInputStream;
-
 import java.io.BufferedReader;
 import java.io.File;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -17,17 +15,14 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;/*
-sdsds
-*/import java.util.zip.ZipInputStream;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javafx.scene.control.TextField;
-
-
 //TODO
 /* code formatter 3(most likley no)                    
-* Asterix 2
-* javafx 1
+* Asterix 2(doing it)
+* javafx (doing it)
+* resolve issue with import of other subpackages (\\w+.)
 */
 
 
@@ -66,6 +61,14 @@ public class Package {
 	    return false;
 	}
 	
+	
+	static boolean IsAnnotation(String Line) {
+		return Line.startsWith("@") && !Line.equals("@Overload") && !Line.equals("@Override") ;
+	}
+	
+	static String FetchAnnotation(String Line) {
+		return Line.substring(Line.indexOf("@")+1);
+		}
 	
     //Detect If Line Is Variable
    static boolean IsVariable(String line) {
@@ -125,9 +128,12 @@ public class Package {
 	
   //Method to know If Line Is A Method Prototype	
 	 static boolean IsMethode(String Line) {
+		    String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
+			String CollectionPatterne="(<[\\s\\S]+?>|(\\[\\s*\\]\\s*){1,2})?";
+		    String PatterneNonAcessModifier="(?:static\\s+final\\s+|static\\s+|final\\s+|abstract\\s+)?";
 		    String ThrowsPattern = "(\\s*throws\\s+\\w+)?"; // Making the throws clause optional
-		    String MethodPattern = "(?!return\\s+)(?!else\\s+if\\s*\\()\\w*\\s*\\w*\\s*\\w*\\s*\\w+\\s+\\w+\\s*\\([^()]*\\) " + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
-		    String ConstructorPattern = "(?!while\\s*\\()(?!catch\\s*\\()(?!for\\s*\\()(?!if\\s*\\()(?!return\\s+)(?!else\\s+if\\s*\\()\\w*\\s*\\w+\\s*\\([^()]*\\)" + ThrowsPattern + "\\s*(\\{|\\{\\s*\\})?\\s*";
+		    String MethodPattern = PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else)\\w+\\s*" + CollectionPatterne+ "\\s+(?!if)\\w+\\s*\\([^()]*\\)\\s*" + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
+		    String ConstructorPattern = PattrneAcessModfiers+"(?!(return|catch|if|while|for))\\w+\\s*\\([^()]*\\)\\s*"+ ThrowsPattern +"\\s*(\\{|\\{\\s*\\})?\\s*";
 		    return Line.matches(MethodPattern) || Line.matches(ConstructorPattern);
 		}
 	//Method to Know If Line Is Bracket Only Line
@@ -233,9 +239,9 @@ public class Package {
 		
 	static void IsAll(ArrayList<String> ListImportFromFile , String line) {
 		if(IsMethode(line)) {
-    		//System.out.println(line);
+    		System.out.println(line);
     		  extractClassNamesMethode(line, ListImportFromFile);
-    		  //System.out.println(ListImportFromFile);
+    		  System.out.println(ListImportFromFile);
     	}
     	else if(IsNew(line)) {
     		//System.out.println(line);
@@ -255,14 +261,20 @@ public class Package {
     	}
     	else if (IsVariable(line)) {
     		ExtractVarClassNames(line,ListImportFromFile);
-    		System.out.println(line);
-    		System.out.println(ListImportFromFile);
+    	//	System.out.println(line);
+    		//System.out.println(ListImportFromFile);
+    	}
+    	else if(IsAnnotation(line)) {
+    		ListImportFromFile.add(FetchAnnotation(line));
     	}
 	}
 	/*              */
 	/*
 	 *
 	 */
+	public static boolean IsPackage(String Line) {
+		return Line.startsWith("package ");
+	}
 	
 	
 	  //Method To Update Flags Of ImportStatus(used , not used)
@@ -275,8 +287,9 @@ public class Package {
 	                ArrayList<String> ListImportFromFile = new ArrayList<String>();
 	                ArrayList<String> ListCode=new ArrayList<String>();
 	                
-	                if(!line.isBlank() && !line.isEmpty() && !Comment.IsCommentOnlyCompleted(line) && !IsImport(line)) {
-	            	if(Comment.ContainsComment(line)) {
+	                if(!line.isBlank() && !line.isEmpty() && !IsBracket(line)&& !Comment.IsCommentOnlyCompleted(line) && !IsImport(line) &&!IsPackage(line)) {
+	            	//System.out.println(line);
+	                	if(Comment.ContainsComment(line)) {
 	            	//	System.out.println(line);
 	            		line = Comment.RemoveComment(line);
 	            	}
@@ -330,7 +343,8 @@ public class Package {
 	            	Line = Line.trim();
 	            	Line = Qoute.RemoveQoute(Line);
 	            	ArrayList<String> ListCode=new ArrayList<String>();
-	            	if(!Line.isBlank() && !Line.isEmpty() && !Comment.IsCommentOnlyCompleted(Line)) {
+	            	if(!Line.isBlank() && !Line.isEmpty() && !Comment.IsCommentOnlyCompleted(Line) && !IsPackage(Line)) {
+	            		//System.out.println(Line);
 	            		if(Comment.ContainsComment(Line)) {
 	    	            	//System.out.println(line);
 	    	            		Line = Comment.RemoveComment(Line);

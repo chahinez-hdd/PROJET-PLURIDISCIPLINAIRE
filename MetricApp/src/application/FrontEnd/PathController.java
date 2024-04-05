@@ -1,5 +1,6 @@
 package application.FrontEnd;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +8,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +63,7 @@ public class PathController {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/MetricJava.fxml"));
             Parent root = fxmlLoader.load();
             MetricController metricController = fxmlLoader.getController();
-            metricController.initialize(pathProject);
+             metricController.initialize(pathProject);
             Scene scene = new Scene(root);
             String css = this.getClass().getResource("/ressource/Css Folder/application.css").toExternalForm();
             scene.getStylesheets().add(css);

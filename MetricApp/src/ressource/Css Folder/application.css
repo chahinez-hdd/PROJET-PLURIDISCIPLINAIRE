@@ -30,6 +30,8 @@
 
 .root-node-svg{
 	-fx-fill:lightblue;
+	-fx-scale-x:1.5;
+	-fx-scale-y:1.5;
 }
 
 
