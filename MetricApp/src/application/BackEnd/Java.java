@@ -6,20 +6,28 @@ import java.util.Scanner;
 
 public class Java {
 		
+	public static String ConcatSrc(String path) {
+		if(!(path.endsWith("src") || path.endsWith("src"+File.separator))) {
+	
+          	if(path.endsWith(File.separator)) {
+          		path+="src";
+          	}
+          	else {
+          		path+=File.separator+"src";
+          	}
+          }
+		
+		return path;
+	}
+	
 	//Method To Know If A Giving Path Is A Java Project
 	public static int IsJavaProject(String PathProject) {
 		if(!(new File (PathProject).exists())) {
 			System.out.println("Error Path Doesnt even Exist");
 			return -1;
 		}
-		 if(!PathProject.endsWith("src") || !PathProject.endsWith("src"+File.separator)) {
-         	if(PathProject.endsWith(File.separator)) {
-         		PathProject+="src";
-         	}
-         	else {
-         		PathProject+=File.separator+"src";
-         	}
-         }
+		PathProject=ConcatSrc(PathProject);
+		System.out.println(PathProject);
 		File SrcFile = new File(PathProject);
 		if(!SrcFile.exists()) {
 			System.out.println("Src Folder Doesn't Exist");

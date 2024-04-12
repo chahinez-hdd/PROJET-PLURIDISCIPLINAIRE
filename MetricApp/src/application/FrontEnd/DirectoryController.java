@@ -48,6 +48,7 @@ public class DirectoryController {
                 break;
             case 1:
             	 setErrorLabel("Java Project", "green");
+            	path= Java.ConcatSrc(path);
                 openMetricScene(path);
                 break;
             case 2:

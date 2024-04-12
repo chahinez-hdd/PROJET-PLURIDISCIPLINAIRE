@@ -385,7 +385,7 @@ public class Package {
 	            				for(String code : ListCode) {
 	            					if(IsImport(code)) {
 	            	            		int index = code.indexOf(';');
-	            	            		ImportList.add(new ImportStatus(code.substring(7, index),0));
+	            	            		ImportList.add(new ImportStatus(code.substring(7, index).trim(),0));
 	            	            		
 	            	            	}
 	            					else {
@@ -397,7 +397,7 @@ public class Package {
 	            		if(ListCode.isEmpty()) {
 	            			if(IsImport(Line)) {
         	            		int index = Line.indexOf(';');
-        	            		ImportList.add(new ImportStatus(Line.substring(7, index),0));
+        	            		ImportList.add(new ImportStatus(Line.substring(7, index).trim(),0));
         	            		
         	            	}
 	            			else {
