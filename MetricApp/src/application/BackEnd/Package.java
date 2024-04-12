@@ -28,11 +28,11 @@ import javafx.scene.control.TextField;
 
 public class Package {
 	public String PackageName;
-	public ArrayList<FileInfo> FileList = new ArrayList<FileInfo>();
+	public ArrayList<String> FileNameList = new ArrayList<String>();
 	public ArrayList<Package> SubPackges = new ArrayList<Package>();
-	Package(String PackageName,ArrayList<FileInfo> FileList ){
+	Package(String PackageName,ArrayList<String> FileNameList ){
 		this.PackageName = PackageName;
-		this.FileList=FileList;
+		this.FileNameList=FileNameList;
 	}
 	
 	
@@ -46,19 +46,17 @@ public class Package {
 
 	
 	public static boolean classExists(String asterixImport, String className) {
-	    String[] arrayPackage = {"java.util.", "java.util.regex.", "java.math.","java.net.","java.io.","com.sun.crypto.provider.","com.sun.security.ntlm."};
 	    
-	    for (String pkg : arrayPackage) {
 	        try {
-	            Class.forName(pkg + className);
-	            return true; // Return true if class is found
+	        	Class.forName(asterixImport.substring(0,asterixImport.lastIndexOf("*")) + className);
+	            return true; 
 	        } catch (ClassNotFoundException e) {
-	            // Class not found in this package, continue searching
+	        	 return false;
+	            
 	        }
-	    }
 	    
-	    // None of the classes were found, return false
-	    return false;
+	   
+	   
 	}
 	
 	
@@ -267,6 +265,9 @@ public class Package {
     	else if(IsAnnotation(line)) {
     		ListImportFromFile.add(FetchAnnotation(line));
     	}
+    	else if (IsStaticCall(line)) {
+    		FetchStaticCall(line,ListImportFromFile);
+    	}
 	}
 	/*              */
 	/*
@@ -318,9 +319,14 @@ public class Package {
 	            	}
 	            	for(ImportStatus Import : ImportList) {
 	            		for(String ImportFile :  ListImportFromFile) {
+	            			if(!Import.ImportName.contains("*")) {
 	            			if(Import.ImportName.substring(Import.ImportName.lastIndexOf(".")+1).equals(ImportFile)) {
 	            			
 	            				Import.ImportStatus = 1;
+	            			}
+	            			}
+	            			else {
+	            				classExists(Import.ImportName,ImportFile);
 	            			}
 	            		}
 	            	}
@@ -331,6 +337,19 @@ public class Package {
 	            e.printStackTrace(); // Handle any IO exceptions
 	        }
 		 return ImportList;
+	 }
+	 
+	 static boolean IsStaticCall(String Line) {
+		 return Line.contains(".");
+	 }
+	 
+	 static void FetchStaticCall(String Line , ArrayList<String>ClassList) {
+		 Pattern pattern = Pattern.compile("(\\w+)\\.");
+		    Matcher matcher = pattern.matcher(Line);
+		    while (matcher.find()) {
+		        String className = matcher.group(1);
+		        ClassList.add(className);
+		    }
 	 }
 
 

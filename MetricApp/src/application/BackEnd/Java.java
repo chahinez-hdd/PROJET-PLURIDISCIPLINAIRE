@@ -12,9 +12,6 @@ public class Java {
 			System.out.println("Error Path Doesnt even Exist");
 			return -1;
 		}
-		if(!PathProject.endsWith("\\src") && !PathProject.endsWith("\\src\\")) {
-			PathProject+="\\src";
-		}
 		File SrcFile = new File(PathProject);
 		if(!SrcFile.exists()) {
 			System.out.println("Src Folder Doesn't Exist");
@@ -90,12 +87,12 @@ public class Java {
 	static void FetchJavaFile(File PackageDir,ArrayList<Package>ListPackage) {
 		File[]FileList = PackageDir.listFiles();
 		if(FileList.length!=0) {
-		ArrayList<FileInfo> ListInfoFile=new ArrayList<FileInfo>();
+		ArrayList<String> ListInfoFile=new ArrayList<String>();
 		ArrayList<Package> SubPackages = new ArrayList<>(); // Store sub-packages
         //loop to fetch java file of package
 		for(File file : FileList) {
         	if( file.isFile() && file.getName().endsWith(".java")) {
-        		ListInfoFile.add(new FileInfo(file,0,null));
+        		ListInfoFile.add(file.getName());
         	}
         	
         }
@@ -113,10 +110,10 @@ public class Java {
  }
 	//Fetch Java File In Case Of Default Package
 	static void FetchJavaFileNoPackage(File[]SrcFile,ArrayList<Package>ListPackage) {
-		ArrayList<FileInfo>ListInfoFile=new ArrayList<FileInfo>();
+		ArrayList<String>ListInfoFile=new ArrayList<String>();
 		for(File file : SrcFile) {
 			if(file.getName().endsWith(".java")) {
-				ListInfoFile.add(new FileInfo(file,0,null));
+				ListInfoFile.add(file.getName());
 			}
 		}
 		ListPackage.add(new Package("Default Package",ListInfoFile));
@@ -140,57 +137,11 @@ public class Java {
 	   
 	
 
-	private static void printTree(ArrayList<Package> packageList, int depth) {
-	    for (Package pkg : packageList) {
-	        // Print package name with appropriate indentation
-	        for (int i = 0; i < depth; i++) {
-	            System.out.print("|  ");
-	        }
-	        System.out.println("|-- " + pkg.PackageName);
-
-	        // Print files within the package
-	        for (FileInfo fileInfo : pkg.FileList) {
-	            // Indent file representation appropriately
-	            for (int i = 0; i <= depth; i++) {
-	                System.out.print("|  ");
-	            }
-	            System.out.println("|-- " + fileInfo.file.getName());
-	        }
-
-	        // Recursively print sub-packages
-	        printTree(pkg.SubPackges, depth + 1);
-	    }
-	}
 	
-	static void BrowseFileMetric(String PathProject) {
-		Scanner sc = new Scanner(System.in);
-		if(!PathProject.endsWith("\\src") && !PathProject.endsWith("\\src\\")) {
-			PathProject+="\\src";
-		}
-		//System.out.println(IsJavaProject(PathProject));
-		if(IsJavaProject(PathProject) == 1) {
-			//System.out.println("hehe");
-			ArrayList<Package> ListPackage = new ArrayList<Package>();
-			File ProjectFile = new File(PathProject);
-			File[] SrcFile =ProjectFile.listFiles();
-			FetchSrcJavaFile(SrcFile,ListPackage);
-	        int choice;
-			do {
-			//	PrintRecursive(ListPackage);
-				printTree(ListPackage,0);
-	        System.out.println("0. TO EXIT");
-	        System.out.println("1. TO CHOOSE FILE");
-	        choice = sc.nextInt();
-	        if(choice==1) {
-	        	System.out.println("INPUT FILE NAME : ");
-	        	String FileName = sc.next();
-	        }
-	        }while(choice!=0);
-			
-			    
-		}
+	
+	
 		
-	}
+	
   	
 
 
