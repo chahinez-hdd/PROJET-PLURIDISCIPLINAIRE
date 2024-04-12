@@ -12,6 +12,14 @@ public class Java {
 			System.out.println("Error Path Doesnt even Exist");
 			return -1;
 		}
+		 if(!PathProject.endsWith("src") || !PathProject.endsWith("src"+File.separator)) {
+         	if(PathProject.endsWith(File.separator)) {
+         		PathProject+="src";
+         	}
+         	else {
+         		PathProject+=File.separator+"src";
+         	}
+         }
 		File SrcFile = new File(PathProject);
 		if(!SrcFile.exists()) {
 			System.out.println("Src Folder Doesn't Exist");

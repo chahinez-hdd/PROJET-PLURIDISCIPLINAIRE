@@ -33,14 +33,7 @@ public class DirectoryController {
         if (selectedDirectory != null) {
         	String path = selectedDirectory.getAbsolutePath();
             PathField.setText(path);
-            if(!path.endsWith("src") || !path.endsWith("src"+File.separator)) {
-            	if(path.endsWith(File.separator)) {
-            	path+="src";
-            	}
-            	else {
-            		path+=File.separator+"src";
-            	}
-            }
+           
             //System.out.println(path);
             //System.out.println(Java.IsJavaProject(path));
             switch(Java.IsJavaProject(path)) {
