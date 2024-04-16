@@ -1,28 +1,37 @@
 package application.FrontEnd;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import      javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
@@ -61,61 +70,127 @@ public class MetricController {
                     String FilePath = RealPathConcat(getFileHierarchy(selectedItem),pathProject);
                    System.out.println(FilePath);
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setHeaderText("Leaf Node Actions");
+                    alert.setHeaderText("Java Metrics");
                     alert.setContentText("Choose an action to perform:");
+                   // DialogPane dialogPane = alert.getDialogPane();
+                    //dialogPane.lookup(".header-panel").getStyleClass().add("alert-header");
+                   // Label header = (Label) alert.getDialogPane().lookup(".header-panel");
+                   // header.setStyle("-fx-font-size: 30px;");
+                    //dialogPane.lookup(".content.label").getStyleClass().add("alert-content");
+                   
+                   // HBox buttonBox = new HBox(10,buttonType1);
+                    alert.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/ressource/PNG Folder/metrics (2).png"))));
+                    ImageView imageView = (ImageView) alert.getGraphic();
+                    imageView.setFitWidth(60); // Set the preferred width
+                    imageView.setFitHeight(60); // Set the preferred height
+                 //   alert.getGraphic().getStyleClass().add("imageView");
+                    alert.getButtonTypes().remove(ButtonType.OK); 
+                    Button importsButton = new Button("Imports");
+                    Button lineCodeButton = new Button("Line Code");
+                    Button exceptionButton = new Button("Exception");
+                    Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
+                    cancelButton.setDefaultButton(true);
+                    
+                    
+                    importsButton.setOnAction(e -> {
+                        // Handle "Imports" button action
+                        System.out.println("Imports button clicked");
 
-                    ButtonType buttonType1 = new ButtonType("Imports");
-                    ButtonType buttonType2 = new ButtonType("Line Code ");
-                    ButtonType buttonType3 = new ButtonType("Exception");
-                    ButtonType buttonTypeCancel = new ButtonType("Cancel");
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Import.fxml"));
+                        Parent root = null;
+						try {
+							root = fxmlLoader.load();
+						} catch (IOException exception) {
+					
+							exception.printStackTrace();
+						}
+                        ImportController importController = fxmlLoader.getController();
+                        importController.initialize(FilePath);
+                        Scene scene = new Scene(root);
+                        String css = this.getClass().getResource("/ressource/Css Folder/Import.css").toExternalForm();
+                        scene.getStylesheets().add(css);
+                        Stage stage = new Stage();
+                        stage.setScene(scene);
+                        stage.show();
+                    
+                    });
 
-                    alert.getButtonTypes().setAll(buttonType1, buttonType2, buttonType3, buttonTypeCancel);
+                    lineCodeButton.setOnAction(e -> {
+                        // Handle "Line Code" button action
+                        System.out.println("Line Code button clicked");
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Line.fxml"));
+                        Parent root = null;
+						try {
+							root = fxmlLoader.load();
+						} catch (IOException exception) {
+							// TODO Auto-generated catch block
+							exception.printStackTrace();
+						}
+                   	LineController lineController = fxmlLoader.getController();
+                       lineController.initialize(FilePath);
+                       Scene scene = new Scene(root);
+                       String css = this.getClass().getResource("/ressource/Css Folder/Line.css").toExternalForm();
+                       scene.getStylesheets().add(css);
+                       Stage stage = new Stage();
+                       stage.setScene(scene);
+                       stage.show();
+                    
+                    });
 
-                    alert.showAndWait().ifPresent(buttonType -> {
-                        if (buttonType == buttonType1) {
-                        	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Import.fxml"));
-                             Parent root = null;
-							try {
-								root = fxmlLoader.load();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-                             ImportController importController = fxmlLoader.getController();
-                             importController.initialize(FilePath);
-                             Scene scene = new Scene(root);
-                             String css = this.getClass().getResource("/ressource/Css Folder/Import.css").toExternalForm();
-                             scene.getStylesheets().add(css);
-                             Stage stage = new Stage();
-                             stage.setScene(scene);
-                             stage.show();
-                        } else if (buttonType == buttonType2) {
-                        	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Line.fxml"));
-                             Parent root = null;
-							try {
-								root = fxmlLoader.load();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-                        	LineController lineController = fxmlLoader.getController();
-                            lineController.initialize(FilePath);
-                            Scene scene = new Scene(root);
-                            String css = this.getClass().getResource("/ressource/Css Folder/Line.css").toExternalForm();
-                            scene.getStylesheets().add(css);
-                            Stage stage = new Stage();
-                            stage.setScene(scene);
-                            stage.show();
-                        } else if (buttonType == buttonType3) {
-                            // Perform action 3
-                        }
+                    exceptionButton.setOnAction(e -> {
+                        // Handle "Exception" button action
+                        System.out.println("Exception button clicked");
+                    });
+
+                    
+                    
+                    
+
+                    // Create an HBox container for the buttons
+                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton);
+                    buttonBox.setAlignment(Pos.CENTER); // Center the buttons horizontally within the HBox
+
+                    // Add buttons to the dialog pane
+                   
+                    Label instructionLabel = new Label("Choose an action to perform:");
+                    instructionLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
+                    VBox content = new VBox(30,instructionLabel,buttonBox);
+                    content.setAlignment(Pos.CENTER); // Center the content vertically within the VBox
+
+                    // Set the content of the alert dialog
+                    alert.getDialogPane().setContent(content);
+              
+                   
+
+                    String CssAlert=this.getClass().getResource("/ressource/Css Folder/alert.css").toExternalForm();
+                    alert.getDialogPane().getStylesheets().add(CssAlert);
+                    Platform.runLater(() -> {
+                        // Show the alert and wait for user action
+                        alert.showAndWait();
                     });
                 }
             }
         });
-     
-        
+
+
+
+
+                    
+                    //alert.getButtonTypes().setAll(buttonType1, buttonType2, buttonType3, buttonTypeCancel);
+                    
+                   // alert.getDialogPane().requestFocus();
+                   
+                    
+                    
+                    //buttonBox.setPadding(new Insets(10));
+                    //buttonBox.setAlignment(javafx.geometry.Pos.CENTER); // Center buttons horizontally
+
+                    // Set HBox as the content of the dialog pane
+                  //  alert.getDialogPane().setContent(buttonBox);
+                    
+                        
     }
+    
     
     public TreeView<TreeItemData> getTreeView() {
         return this.treeView;
