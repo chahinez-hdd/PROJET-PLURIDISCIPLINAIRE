@@ -110,30 +110,80 @@ public class Package {
 	
 	
 	//Method To Extract Class Names From Method Prototype Line
-	 static void extractClassNamesMethode(String methodLine,ArrayList<String> classNames) { 
-		 String line = methodLine.substring(methodLine.indexOf("(")+1,methodLine.indexOf(")")+1); 
+	static ArrayList<String> FetchMethodThrowable(String line){
+		ArrayList<String> classNames = new ArrayList<String>();
+		Pattern ThrowsPattern = Pattern.compile( "\\s*throws\\s+(\\w+)\\s*|(?:\\s*\\,\\s*(\\w+)\\s*)");
+	    Matcher matcher = ThrowsPattern.matcher(line);
+        while (matcher.find()) {
+        	
+        	String className = matcher.group(1);
+	        if (className == null) { // If the first capturing group didn't match
+	            className = matcher.group(2); // Use the second capturing group
+	        }
+	        classNames.add(className);	            
+           
+            
+        }    
+        return classNames;
+	}
+	
+	static ArrayList<String> FetchMethodArgumentType(String line){
+		ArrayList<String> classNames= new ArrayList<String>();  
+		line = line.substring(line.indexOf("(")+1,line.indexOf(")")+1); 
 	        Pattern pattern = Pattern.compile("(?<=<\\s*)\\b\\w+\\b|\\b\\w+\\b(?!\\s*,)(?!\\s*\\))"); // Regular expression to match class names
 
 	        Matcher matcher = pattern.matcher(line);
 	        while (matcher.find()) {
 	            String className = matcher.group();
 	            classNames.add(className);
-	        }
-	        
-	        
-	 }	
+	        }    
+	    return classNames;
+	}
 	
-	
-  //Method to know If Line Is A Method Prototype	
-	 static boolean IsMethode(String Line) {
+	static String FetchMethodReturnType(String line) {
+		if(!IsConstructor(line)) {
+		 String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
+		 String PatterneNonAcessModifier="(?:static\\s+final\\s+|static\\s+|final\\s+|abstract\\s+)?";
+		 Pattern MethodPattern =  Pattern.compile( PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else)(\\w+)\\s*");
+		 Matcher matcher = MethodPattern.matcher(line);
+		 while(matcher.find())
+		 {
+			 return matcher.group(1);
+		 }
+		}
+		
+		 return null;
+		
+	}
+	 static void extractClassNamesMethod(String line,ArrayList<String> classNames) { 
+		 classNames.addAll(FetchMethodArgumentType(line));
+		 classNames.addAll(FetchMethodThrowable(line));
+		 if(FetchMethodReturnType(line)!=null) {
+		 classNames.add(FetchMethodReturnType(line));
+		 }
+		 }
+	 
+	 static boolean IsConstructor(String line) {
 		    String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
+			    String ThrowsPattern = "\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*"; // Making the throws clause optional
+			    String ConstructorPattern = PattrneAcessModfiers+"(?!(return|catch|if|while|for))\\w+\\s*\\([^()]*\\)\\s*"+ ThrowsPattern +"\\s*(\\{|\\{\\s*\\})?\\s*";
+			    return  line.matches(ConstructorPattern);	
+		}
+		
+		static boolean IsMethod(String line) {
+			String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
 			String CollectionPatterne="(<[\\s\\S]+?>|(\\[\\s*\\]\\s*){1,2})?";
 		    String PatterneNonAcessModifier="(?:static\\s+final\\s+|static\\s+|final\\s+|abstract\\s+)?";
-		    String ThrowsPattern = "(\\s*throws\\s+\\w+)?"; // Making the throws clause optional
+		    String ThrowsPattern = "\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*"; // Making the throws clause optional
 		    String MethodPattern = PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else)\\w+\\s*" + CollectionPatterne+ "\\s+(?!if)\\w+\\s*\\([^()]*\\)\\s*" + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
-		    String ConstructorPattern = PattrneAcessModfiers+"(?!(return|catch|if|while|for))\\w+\\s*\\([^()]*\\)\\s*"+ ThrowsPattern +"\\s*(\\{|\\{\\s*\\})?\\s*";
-		    return Line.matches(MethodPattern) || Line.matches(ConstructorPattern);
+		    return line.matches(MethodPattern); 
 		}
+	 
+	
+  //Method to know If Line Is A Method Prototype	
+	 static boolean IsMethodPrototype(String Line) {
+		    return IsConstructor(Line) || IsMethod(Line);
+	 }
 	//Method to Know If Line Is Bracket Only Line
 	static boolean IsBracket(String Line) {
 		String line = Line;
@@ -163,23 +213,6 @@ public class Package {
 	    }
 	}
 	
- //Method To Fetch Exception From Throws
-	static String ThrowsException(String Line) {
-		String line = Line.trim();
-		int BI = line.indexOf("throws")+6;
-		line = line.substring(BI);
-		line = line.trim();
-		line = line.replaceAll(" ", "");
-		int BS = 0;
-		if(line.contains("{")) {
-		 BS = line.indexOf("{");
-		 return line.substring(0,BS).replaceAll(" ", "");
-		}
-		else {
-			return line.replaceAll(" ", "");
-		}
-		
-	}
 	
 	//Method To Fetch Exception From Throw	
 	static String ThrowException(String Line) {
@@ -214,17 +247,6 @@ public class Package {
 	}
 	
 	
-	//Method To Know If Line Is Throws
-	static Boolean IsThrows(String Line) {
-		String line = Line;
-		line = line.replaceAll(" ","");
-		if(line.contains(")")) {
-		return line.substring(line.lastIndexOf(")")).contains("throws ");
-		}
-		else {
-			return false;
-		}
-	}
 	//Method To Know If Line Is Throw
 	static Boolean IsThrow(String Line) {
 		return Line.startsWith("throw ");
@@ -239,9 +261,9 @@ public class Package {
 	}
 		
 	static void IsAll(ArrayList<String> ListImportFromFile , String line) {
-		if(IsMethode(line)) {
+		if(IsMethodPrototype(line)) {
     		System.out.println(line);
-    		  extractClassNamesMethode(line, ListImportFromFile);
+    		  extractClassNamesMethod(line, ListImportFromFile);
     		  System.out.println(ListImportFromFile);
     	}
     	else if(IsNew(line)) {
@@ -256,9 +278,6 @@ public class Package {
     	}
     	else if(IsThrow(line)) {
     		ListImportFromFile.add(ThrowException(line));
-    	}
-    	else if(IsThrows(line)) {
-    		ListImportFromFile.add(ThrowsException(line));
     	}
     	else if (IsVariable(line)) {
     		ExtractVarClassNames(line,ListImportFromFile);
