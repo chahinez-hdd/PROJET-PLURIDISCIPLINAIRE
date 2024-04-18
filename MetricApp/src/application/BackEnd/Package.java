@@ -193,13 +193,19 @@ public class Package {
 	}
 	
 	//Method To Fetch Exception From Catch
-	static String CatchException(String Line) {
-		String line = Line;
-		int BI = line.indexOf("(")+1;
-		line = line.substring(BI);
-		line = line.trim();
-		int BS = line.indexOf(" ");
-		return line.substring(0,BS);
+	static ArrayList<String> CatchException(String line) {
+	    ArrayList<String>classNames = new ArrayList<String>();
+		Pattern pattern = Pattern.compile("\\(\\s*(\\w+)|\\|\\s*(\\w+)");
+	    Matcher matcher = pattern.matcher(line);
+	    while (matcher.find()) {
+	        String className = matcher.group(1);
+	        if (className == null) { // If the first capturing group didn't match
+	            className = matcher.group(2); // Use the second capturing group
+	        }
+	        classNames.add(className);
+	    }
+	    
+		return classNames;
 	}
 	
 	//Method To Know If Line Is Import
@@ -225,15 +231,12 @@ public class Package {
 	}
 	
 	//Method To Know If Line Is Catch
-	 static Boolean IsCatch(String Line) {
-		   String line = Line;
-		   line = line.replaceAll(" ","");
-			line = line.trim();
-			if(line.startsWith("}")) {
-				line = line.replaceAll("}","");
-			}
-			return line.startsWith("catch");
-	   }
+	static boolean IsCatch(String line) {
+	    line = line.trim();
+	    String PipeCatch = "(\\s*\\|\\s*\\w+(\\s+\\w+)?\\s*)*";
+	    String PatternCatch = "(\\})?\\s*catch\\s*\\(\\s*\\w+(\\s+\\w+)?"+PipeCatch+"\\s*\\)\\s*(\\{)?\\s*";
+	    return line.matches(PatternCatch);
+	}
 		
 	static void IsAll(ArrayList<String> ListImportFromFile , String line) {
 		if(IsMethode(line)) {
@@ -248,7 +251,7 @@ public class Package {
     	}
     	else if(IsCatch(line)) {
     		//System.out.println(line);
-    		ListImportFromFile.add(CatchException(line));
+    		ListImportFromFile.addAll(CatchException(line));
     		//System.out.println(CatchException(line));
     	}
     	else if(IsThrow(line)) {
