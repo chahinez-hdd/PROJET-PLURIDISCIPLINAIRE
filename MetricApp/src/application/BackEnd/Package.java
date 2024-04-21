@@ -165,20 +165,19 @@ public class Package {
 	 
 	 static boolean IsConstructor(String line) {
 		    String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
-			    String ThrowsPattern = "\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*"; // Making the throws clause optional
-			    String ConstructorPattern = PattrneAcessModfiers+"(?!(return|catch|if|while|for))\\w+\\s*\\([^()]*\\)\\s*"+ ThrowsPattern +"\\s*(\\{|\\{\\s*\\})?\\s*";
+			    String ThrowsPattern = "(\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*)?"; // Making the throws clause optional
+			    String ConstructorPattern = PattrneAcessModfiers+"(?!(return|catch|else|while|for|if))\\w+\\s*\\([^()]*\\)\\s*"+ ThrowsPattern +"\\s*(\\{|\\{\\s*\\})?\\s*";
 			    return  line.matches(ConstructorPattern);	
 		}
 		
-		static boolean IsMethod(String line) {
+	 static boolean IsMethod(String line) {
 			String PattrneAcessModfiers="(?:private\\s+|protected\\s+|public\\s+)?";
 			String CollectionPatterne="(<[\\s\\S]+?>|(\\[\\s*\\]\\s*){1,2})?";
 		    String PatterneNonAcessModifier="(?:static\\s+final\\s+|static\\s+|final\\s+|abstract\\s+)?";
-		    String ThrowsPattern = "\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*"; // Making the throws clause optional
-		    String MethodPattern = PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else)\\w+\\s*" + CollectionPatterne+ "\\s+(?!if)\\w+\\s*\\([^()]*\\)\\s*" + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
+		    String ThrowsPattern = "(\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*)?"; // Making the throws clause optional
+		    String MethodPattern = PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else)\\b\\w+\\b\\s*" + CollectionPatterne+ "(\\s*|\\s+)(?!if)\\b\\w+\\b\\s*\\([^()]*\\)\\s*" + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
 		    return line.matches(MethodPattern); 
 		}
-	 
 	
   //Method to know If Line Is A Method Prototype	
 	 static boolean IsMethodPrototype(String Line) {
@@ -215,14 +214,18 @@ public class Package {
 	
 	
 	//Method To Fetch Exception From Throw	
-	static String ThrowException(String Line) {
-		String line = Line;
-		int BI = line.indexOf("new")+3;
-		line = line.substring(BI);
-		line = line.trim();
-		line = line.replaceAll(" ", "");
-		int BS = line.indexOf("(");
-		return line.substring(0,BS);
+	static ArrayList<String>ThrowException(String line){
+		ArrayList<String> classNames = new ArrayList<String>();
+		Pattern ThrowsPattern = Pattern.compile("(?:\\s*|\\s+)new\\s+(\\w+)\\s*\\(");
+	    Matcher matcher = ThrowsPattern.matcher(line);
+        while (matcher.find()) {
+        	
+        	String className = matcher.group(1);
+	        
+	        classNames.add(className);	            
+            
+        }    
+        return classNames;	
 	}
 	
 	//Method To Fetch Exception From Catch
@@ -248,8 +251,11 @@ public class Package {
 	
 	
 	//Method To Know If Line Is Throw
-	static Boolean IsThrow(String Line) {
-		return Line.startsWith("throw ");
+	static boolean IsThrow(String line) {
+		String MultipleThrowPattern="(,\\s*new\\s+\\w+\\s*\\(([^()]*)?\\)\\s*)*";
+		String pattern = "throw\\s+new\\s+\\w+\\s*\\(([^()]*)?\\)"+MultipleThrowPattern+"\\s*;";
+		
+		return line.matches(pattern);
 	}
 	
 	//Method To Know If Line Is Catch
@@ -277,7 +283,7 @@ public class Package {
     		//System.out.println(CatchException(line));
     	}
     	else if(IsThrow(line)) {
-    		ListImportFromFile.add(ThrowException(line));
+    		ListImportFromFile.addAll(ThrowException(line));
     	}
     	else if (IsVariable(line)) {
     		ExtractVarClassNames(line,ListImportFromFile);
