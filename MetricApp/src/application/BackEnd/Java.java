@@ -137,18 +137,24 @@ public class Java {
 	
 	//Fetch Java File From Src Folder
 	public static void FetchSrcJavaFile(File[]SrcFile,ArrayList<Package>ListPackage) {
-		if(!IsDefaultPackage(SrcFile)) {
+		ArrayList<String>DefaultPackage=new ArrayList<>();
+		
 		for(File file : SrcFile) {
 			//System.out.println(file.getName());
 				if(file.isDirectory() && file.listFiles()!=null &&IsJavaPackageNotEmpty(file)) {
 					//System.out.println(file.getName());
 					FetchJavaFile(file,ListPackage);
 				}
+				else if(file.isFile() && file.getName().endsWith(".java")) {
+					DefaultPackage.add(file.getName());
+				}
 			}
-			}
-		else {
-			FetchJavaFileNoPackage(SrcFile,ListPackage);
-		}
+			
+		//else {
+			//FetchJavaFileNoPackage(SrcFile,ListPackage);
+		//}
+		ListPackage.add(new Package("Default Package",DefaultPackage));
+		
 	}
 	   
 	
