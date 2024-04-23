@@ -25,91 +25,73 @@ import java.util.zip.ZipEntry;
 
 
 public class ExceptionStatus {
- String ExceptionName;
- int CheckedStatus;
- int DefaultStatus;
+ public String ExceptionName;
+ 
+public int CheckedStatus;
+ public int DefaultStatus;
  ExceptionStatus(String ExceptionName,int CheckedStatus,int DefaultStatus){
 	 this.ExceptionName = ExceptionName;
 	 this.CheckedStatus = CheckedStatus;
 	 this.DefaultStatus = DefaultStatus;
+	
  }
  
  static void IsThrowable(ArrayList<String> List,String line){
 	 if(Package.IsThrow(line)) {
-		 List.add(Package.ThrowException(line));
+		 List.addAll(Package.ThrowException(line));
 	 }
-	 else if(Package.IsThrows(line)) {
-		 List.add(Package.ThrowsException(line));
+	 else if(Package.IsMethod(line)) {
+		 List.addAll(Package.FetchMethodThrowable(line));
 	 }
 	 else if(Package.IsCatch(line)) {
-		 List.add(Package.CatchException(line));
+		 List.addAll(Package.CatchException(line));
 	 }
 	 
  }
  
- 
- static boolean IsDefault(String ExceptionName,String FilePath) {
-	 return true;
+ public static boolean isClassFromJRE(String className) {
+	    try {
+	        Class<?> clazz = Class.forName(className);
+	        ClassLoader classLoader = clazz.getClassLoader();
+	        
+	        // Check if the class loader is null or if it's from the JRE
+	        return classLoader == null || classLoader.getName().contains("java.base")
+	        ||classLoader.getName().contains("java.desktop") 
+	        ||classLoader.getName().contains("java.net")
+	        ||classLoader.getName().contains("java.rmi")
+	        ||classLoader.getName().contains("java.sql");
+	    } catch (ClassNotFoundException e) {
+	        // Handle ClassNotFoundException if the class is not found
+	        return false;
+	    }
  }
  
-
- private static Set<String> listPackages(String ExceptionName) {
-     String classpath = System.getProperty("java.class.path");
-     //String classpath="C:\\Users\\DELL\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-17.0.8.101-hotspot\\lib\\jrt-fs.jar";
-     
-     return Arrays.stream(classpath.split(File.pathSeparator))
-             .filter(entry -> entry.endsWith(".jar") || entry.endsWith(".zip"))
-             .flatMap(entry -> {
-					try {
-						return listJar(new File(entry).toURI().toURL(), ExceptionName).stream();
-					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					return null;
-				})
-             .collect(Collectors.toCollection(TreeSet::new));
- }
-
- private static Set<String> listJar(URL url, String ExceptionName) {
-     Set<String> packages = new LinkedHashSet<>();
-     try {
-         File file = new File(url.toURI());
-         if (file.exists()) {
-             try (JarInputStream in = new JarInputStream(file.toURI().toURL().openStream())) {
-                 for (ZipEntry entry; (entry = in.getNextEntry()) != null; ) {
-                     if (entry.isDirectory()) {
-                     	String PackageName=entry.getName();
-                     	if(entry.getName().contains("/")) {
-                     		PackageName=entry.getName().replaceAll("/",".");
-                     		//System.out.println(PackageName);
-                     		String className = PackageName+ExceptionName;
-                     	}
-                         packages.add(PackageName);
-                     }
-                 }
-             }
-         }
-     } catch (Exception e) {
-         e.printStackTrace();
-     }
-     return packages;
+ 
+ static String ExceptionImport(String ExceptionName,File file) {
+	 for(ImportStatus Import : Package.ImportFetch(file)) {
+		 if(Import.ImportName.endsWith("."+ExceptionName)) {
+			 return Import.ImportName;
+		 }
+	 }
+	 return null;
  }
  
- static boolean IsSrcFile(String ExceptionName,File file) {
+ 
+ static String IsSrcFile(String ExceptionName,File file) {
+	// File file = new File(ProjectPath);
 	 //FilePath = FilePath.substring(0,FilePath.indexOf("/src")+4);
 	 File[] SrcFile = file.listFiles();
 	 for(File Files : SrcFile) {
 		 if( Files.isFile() && Files.getName().endsWith(".java")&& Files.getName().replace(".java", "").equals(ExceptionName)) {
-			 return true;
+		
+			 return Files.getAbsolutePath();
 		 }
 		 else if(Files.isDirectory() && Files.listFiles()!=null) {
-			if (IsSrcFile(ExceptionName,Files)){
-				return true;
-			 }
+			 return IsSrcFile(ExceptionName,Files);
+			 
 		 }
 	 }
-	 return false;
+	 return null;
  }
  
  static boolean IsClassException(String PathSrcFile) throws IOException, ClassNotFoundException {
@@ -150,27 +132,80 @@ public class ExceptionStatus {
  }
  
  
- static ArrayList<ExceptionStatus> UpdateFlagException(ArrayList<String> ListThrowable,String FilePath) {
-	 ArrayList<ExceptionStatus> ListException = new ArrayList<ExceptionStatus>();
+ 
+ 
+ 
+ static int UpdateCheckedStatus(String ExceptionName, String ExceptionPath, int flag) throws IOException {
+	   
 	 try {
-		if(IsClassException(FilePath)) {
-			 
-		 }
-	} catch (ClassNotFoundException | IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	        if (flag == 0) { // Load using system class loader for JRE classes
+	            try {
+	                Class<?> loadedClass = Class.forName(ExceptionPath);
+	             System.out.println(loadedClass.getName());
+	                if (loadedClass != null) {
+	                    // Check the superclass of the loaded class
+	                    Class<?> superClass = loadedClass;
+	                    while (superClass != null) {
+	                    	
+	                        superClass = superClass.getSuperclass();
+	                        System.out.println(superClass.getName());
+	                        if (superClass != null) {
+	                            if (superClass == RuntimeException.class) {
+	                                return 1;
+	                            } else if (superClass == Error.class) {
+	                                return -1;
+	                            }
+	                            else if(superClass == Exception.class) {
+	                            	break;
+	                            }
+	                        }
+	                    }
+	                }
+	            } catch (ClassNotFoundException e) {
+	                // Class not found by the system class loader
+	            }
+	        } else {
+	        	// Load using custom class loader for project classes
+	        	System.out.println(ExceptionPath);
+	        	ExceptionPath = ExceptionPath.replace("\\src\\", "\\bin\\");
+	        	System.out.println(ExceptionPath);
+	        	ExceptionPath = ExceptionPath.substring(0,ExceptionPath.indexOf("\\bin\\")+4);
+	            System.out.println(ExceptionPath);
+	            URLClassLoader classLoader = new URLClassLoader(new URL[]{new File(ExceptionPath).toURI().toURL()});
+	            Class<?> loadedClass = classLoader.loadClass(ExceptionName);
+	            System.out.println(ExceptionPath);
+	           // System.out.println(ExceptionPath);
+	            System.out.println(loadedClass.getName());
+	            classLoader.close();
+
+	            if (loadedClass != null) {
+	                // Check the superclass of the loaded class
+	                Class<?> superClass = loadedClass;
+	                while (superClass != null) {
+	                    superClass = superClass.getSuperclass();
+	                    System.out.println(superClass.getName());
+	                    if (superClass != null) {
+	                        if (superClass == RuntimeException.class) {
+	                            return 1; // UnChecked exception
+	                        } else if (superClass == Error.class) {
+	                            return -1; // Error
+	                        }
+	                        else if(superClass == Exception.class) {
+	                        	break;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    } catch (ClassNotFoundException | MalformedURLException e) {
+	        // Handle exceptions
+	        e.printStackTrace();
+	    }
+
+	    return 0; // Default
 	}
-	 return ListException;
- }
- 
- 
- 
- static ArrayList<ExceptionStatus> UpdateCheckedStatus(ArrayList<ExceptionStatus> List , File file){
-	 
-	 return List;
- }
- 
-  static ArrayList<ExceptionStatus> FetchThrowable(File file){
+
+  public static ArrayList<ExceptionStatus> FetchThrowable(File file,String ProjectPath) throws ClassNotFoundException, IOException{
 	  ArrayList<String> ThrowableList = new ArrayList<String>();
 		String Line;
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -213,8 +248,32 @@ public class ExceptionStatus {
 	         catch (IOException e) {
 	            e.printStackTrace();
 	        }
-		
-	return ThrowableList;
+		System.out.println(ThrowableList);
+	ArrayList<ExceptionStatus> ListException = new ArrayList<>();
+	File FileSrc = new File(ProjectPath);
+	for(String Exc : ThrowableList ) {
+		String ExceptionPath="";
+		int Flag = 0;
+		if(IsSrcFile(Exc,FileSrc )!=null) {
+     	 ExceptionPath = IsSrcFile(Exc, FileSrc); 
+     	 Flag = 1;
+		}
+		else {
+			 ExceptionPath = ExceptionImport(Exc,file);
+			// DefaultFlag = 0;
+
+		}
+     	int CheckedFlag = UpdateCheckedStatus(Exc, ExceptionPath,Flag);
+     	if(CheckedFlag!=-1) {
+     		int Default = 0;
+     
+     		if(!isClassFromJRE(ExceptionPath)) {
+     			Default = 1;
+     		}
+     		ListException.add(new ExceptionStatus(Exc, CheckedFlag, Default));
+     	}
+	}
+	return ListException;
 	  
   }
 }

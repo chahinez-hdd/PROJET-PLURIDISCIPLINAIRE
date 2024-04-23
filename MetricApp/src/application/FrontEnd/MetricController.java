@@ -140,6 +140,23 @@ public class MetricController {
                     exceptionButton.setOnAction(e -> {
                         // Handle "Exception" button action
                         System.out.println("Exception button clicked");
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Exception.fxml"));
+                        Parent root = null;
+						try {
+							root = fxmlLoader.load();
+						} catch (IOException exception) {
+							// TODO Auto-generated catch block
+							exception.printStackTrace();
+						}
+                   	ExceptionController exceptionController = fxmlLoader.getController();
+                       exceptionController.initialize(FilePath);
+                       Scene scene = new Scene(root);
+                       String css = this.getClass().getResource("/ressource/Css Folder/Exception.css").toExternalForm();
+                       scene.getStylesheets().add(css);
+                       Stage stage = new Stage();
+                       stage.setScene(scene);
+                       stage.show();
+
                     });
 
                     

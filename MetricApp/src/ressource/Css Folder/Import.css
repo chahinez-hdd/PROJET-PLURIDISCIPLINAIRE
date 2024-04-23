@@ -1,11 +1,11 @@
 .root-node-label{
 	-fx-font-size:45px;
-	-fx-text-fill:red;
+	
 }
 
  
 .root-node-svg{
-	-fx-fill:lightblue;
+	-fx-fill:#007FFF;
 	-fx-scale-x:2;
 	-fx-scale-y:2;
 	
@@ -35,7 +35,7 @@
 }
 
 .leaf-node-svg{
-	-fx-fill:#A027FF;
+	-fx-fill:#CB9327;
 }
 
 /* Remove blue background on focused tree cells */

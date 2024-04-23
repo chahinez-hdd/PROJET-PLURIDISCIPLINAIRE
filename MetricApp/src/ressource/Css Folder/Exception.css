@@ -1,13 +1,14 @@
 .root-node-label{
 	-fx-font-size:45px;
-	
-}
+     
+     }
 
  
 .root-node-svg{
-	-fx-fill:#007FFF;
-	-fx-scale-x:2;
-	-fx-scale-y:2;
+	
+	-fx-fill:#FF0000;
+	-fx-scale-x:1.9;
+	-fx-scale-y:1.9;
 	
 }
 
@@ -16,16 +17,16 @@
 	-fx-font-size:35px;
 }
 
-.parent-node-used-svg{
-	-fx-fill:#0DFF1C;
-    -fx-scale-x:1.5;
- 	-fx-scale-y:1.5;
+.parent-node-default-svg{
+	-fx-fill:#FFFF00;
+    -fx-scale-x:1.25;
+ 	-fx-scale-y:1.25;
  }
  
- .parent-node-notused-svg{
- 	-fx-fill:#FF200D;
- 	-fx-scale-x:1.5;
- 	-fx-scale-y:1.5;
+ .parent-node-notdefault-svg{
+ 	-fx-fill:#800080;
+ 	-fx-scale-x:1.25;
+ 	-fx-scale-y:1.25;
  }
 
 
@@ -35,7 +36,7 @@
 }
 
 .leaf-node-svg{
-	-fx-fill:#CB9327;
+	-fx-fill:#39A098;
 }
 
 /* Remove blue background on focused tree cells */

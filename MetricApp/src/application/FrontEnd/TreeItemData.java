@@ -3,8 +3,8 @@ package application.FrontEnd;
 import javafx.scene.shape.SVGPath;
 
 public class TreeItemData {
-    String label;
-    SVGPath svgPath;
+   public String label;
+    public SVGPath svgPath;
 
     TreeItemData(String label, String svgPathContent) {
         this.label = label;
