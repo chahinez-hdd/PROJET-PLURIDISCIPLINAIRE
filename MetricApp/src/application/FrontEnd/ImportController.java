@@ -37,8 +37,8 @@ public class ImportController {
 	        File file = new File(FilePath);
 	        ImportLabel.setText("Imports of "+file.getName());
 	        ArrayList<ImportStatus>ListImport = new ArrayList<ImportStatus>();
-	       ListImport = Package.update(file,(Package.ImportFetch(file)));
-	       System.out.println(Package.ImportFetch(file));
+	       ListImport = ImportStatus.update(file,(ImportStatus.ImportFetch(file)));
+	       System.out.println(ImportStatus.ImportFetch(file));
 	        TreeItemData rootItemData = new TreeItemData("Imports","M 2 2.5 A 2.5 2.5 0 0 1 4.5 0 h 8.75 a 0.75 0.75 0 0 1 0.75 0.75 v 12.5 a 0.75 0.75 0 0 1 -0.75 0.75 h -2.5 a 0.75 0.75 0 0 1 0 -1.5 h 1.75 v -2 h -8 a 1 1 0 0 0 -0.714 1.7 a 0.75 0.75 0 1 1 -1.072 1.05 A 2.495 2.495 0 0 1 2 11.5 Z m 10.5 -1 h -8 a 1 1 0 0 0 -1 1 v 6.708 A 2.486 2.486 0 0 1 4.5 9 h 8 Z M 5 12.25 a 0.25 0.25 0 0 1 0.25 -0.25 h 3.5 a 0.25 0.25 0 0 1 0.25 0.25 v 3.25 a 0.25 0.25 0 0 1 -0.4 0.2 l -1.45 -1.087 a 0.249 0.249 0 0 0 -0.3 0 L 5.4 15.7 a 0.25 0.25 0 0 1 -0.4 -0.2 Z");
 	        TreeItem<TreeItemData> rootItem = new TreeItem<>(rootItemData);
 	        treeView.setRoot(rootItem);

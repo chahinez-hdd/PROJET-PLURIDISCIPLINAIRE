@@ -16,7 +16,7 @@ public class Line {
 	            	if(!Line.isEmpty() && !Line.isBlank() && !Comment.IsCommentOnlyCompleted(Line)) {
                     Line = Line.trim();
                     Line =  Qoute.RemoveQoute(Line);
-	                if(!Package.IsBracket(Line)) {
+	                if(!RegularExpression.IsBracket(Line)) {
                     if(Comment.ContainsComment(Line) ) {
 	                	++NbLine;
 	                }
@@ -56,7 +56,7 @@ public class Line {
 	            	if(!Line.isEmpty() && !Line.isBlank()) {
                    Line = Line.trim();
                    Line =  Qoute.RemoveQoute(Line);
-	                if(!Package.IsBracket(Line)) {
+	                if(!RegularExpression.IsBracket(Line)) {
                    if(Comment.IsCommentOnlyCompleted(Line) ) {
 	                	++NbLine;
 	                }
@@ -101,7 +101,7 @@ public class Line {
 		String Line;
 		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	            while ((Line = reader.readLine() )!= null) {
-	            	if(!Line.isEmpty()&& !Line.isBlank() && !Package.IsBracket(Line)) {
+	            	if(!Line.isEmpty()&& !Line.isBlank() && !RegularExpression.IsBracket(Line)) {
 	            	++NbLine;
 	                
 	            	}

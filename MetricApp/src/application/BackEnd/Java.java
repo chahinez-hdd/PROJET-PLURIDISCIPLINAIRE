@@ -5,6 +5,20 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Java {
+	
+	public static boolean classExists(String asterixImport, String className) {
+	    
+        try {
+        	Class.forName(asterixImport.substring(0,asterixImport.lastIndexOf("*")) + className);
+            return true; 
+        } catch (ClassNotFoundException e) {
+        	 return false;
+            
+        }
+    
+   
+   
+}
 		
 	public static String ConcatSrc(String path) {
 		if(!(path.endsWith("src") || path.endsWith("src"+File.separator))) {

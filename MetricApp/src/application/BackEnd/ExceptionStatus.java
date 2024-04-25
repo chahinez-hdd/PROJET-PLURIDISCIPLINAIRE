@@ -37,14 +37,14 @@ public int CheckedStatus;
  }
  
  static void IsThrowable(ArrayList<String> List,String line){
-	 if(Package.IsThrow(line)) {
-		 List.addAll(Package.ThrowException(line));
+	 if(RegularExpression.IsThrow(line)) {
+		 List.addAll(RegularExpression.ThrowException(line));
 	 }
-	 else if(Package.IsMethod(line)) {
-		 List.addAll(Package.FetchMethodThrowable(line));
+	 else if(RegularExpression.IsMethod(line)) {
+		 List.addAll(RegularExpression.FetchMethodThrowable(line));
 	 }
-	 else if(Package.IsCatch(line)) {
-		 List.addAll(Package.CatchException(line));
+	 else if(RegularExpression.IsCatch(line)) {
+		 List.addAll(RegularExpression.CatchException(line));
 	 }
 	 
  }
@@ -68,7 +68,7 @@ public int CheckedStatus;
  
  
  static String ExceptionImport(String ExceptionName,File file) {
-	 for(ImportStatus Import : Package.ImportFetch(file)) {
+	 for(ImportStatus Import : ImportStatus.ImportFetch(file)) {
 		 if(Import.ImportName.endsWith("."+ExceptionName)) {
 			 return Import.ImportName;
 		 }
@@ -213,7 +213,7 @@ public int CheckedStatus;
 	            	Line = Line.trim();
 	            	Line = Qoute.RemoveQoute(Line);
 	            	ArrayList<String> ListCode=new ArrayList<String>();
-	            	if(!Line.isBlank() && !Line.isEmpty() && !Comment.IsCommentOnlyCompleted(Line) && !Package.IsPackage(Line) && !Package.IsImport(Line)) {
+	            	if(!Line.isBlank() && !Line.isEmpty() && !Comment.IsCommentOnlyCompleted(Line) && !RegularExpression.IsPackage(Line) && !RegularExpression.IsImport(Line)) {
 	            		//System.out.println(Line);
 	            		if(Comment.ContainsComment(Line)) {
 	    	            	//System.out.println(line);
