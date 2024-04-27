@@ -9,11 +9,54 @@ import java.util.ArrayList;
 public class ImportStatus {
 public String ImportName;
 public int ImportStatus;
+public int ConflictStatus=0;
 ImportStatus(String ImportName,int ImportStatus){
 	this.ImportName=ImportName;
 	this.ImportStatus=ImportStatus;
 }
 
+//method to see if package from src
+//method to see if from jre
+//method fetch src class , jre class
+//method to see if conflict double wild card
+
+static boolean IsClassImportConflict(String ImportPackageName1,String ImportPackageName2) {
+	String ImportClassName1 = FetchImportClassName(ImportPackageName1);
+	String ImportClassName2 = FetchImportClassName(ImportPackageName2);
+	if(!ImportClassName1.equals("*") && !ImportClassName2.equals("*")&&ImportClassName2.equals(ImportClassName1)) {
+		return true;
+	}
+	else if(ImportClassName1.equals("*") && !ImportClassName2.equals("*")&&Java.classExists(ImportPackageName1, ImportClassName2)) {
+		return true;
+	}
+	else if(!ImportClassName1.equals("*") && ImportClassName2.equals("*")&&Java.classExists(ImportPackageName2, ImportClassName1)) {
+		return true;
+	}
+	else if(ImportClassName1.equals("*") && ImportClassName2.equals("*")) {
+		return true;
+	}
+	return false;
+}
+
+static String  FetchImportClassName(String ImportName) {
+	return ImportName.substring(ImportName.lastIndexOf(".")+1);
+}
+
+static void UpdateConflictFlag(ArrayList<ImportStatus> ImportList) {
+	
+	for(int i = 0;i<ImportList.size();i++) {
+		String ImportPackageName1 = ImportList.get(i).ImportName;
+		
+		for(int j = i+1;j<ImportList.size();j++) {
+			String ImportPackageName2 = ImportList.get(j).ImportName; 
+			 if(IsClassImportConflict(ImportPackageName1, ImportPackageName2)) {
+				ImportList.get(i).ConflictStatus = 1;
+				ImportList.get(j).ConflictStatus = 1;
+			
+		}
+	}
+}
+}
 
 
 static void IsAll(ArrayList<String> ListImportFromFile , String line) {

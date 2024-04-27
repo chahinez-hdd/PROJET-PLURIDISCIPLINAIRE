@@ -6,6 +6,24 @@ import java.util.Scanner;
 
 public class Java {
 	
+	
+	public static boolean IsPackageSrc(String SrcPath , String ImportPackageName) {
+		String FullPath = SrcPath+ImportPackageName.replaceAll(".", File.separator).replace("*", "");
+	    File file = new File(FullPath);
+	    return file.exists();
+	}
+	
+	public static ArrayList<String> FetchSrcPackageClasses( String SrcPath , String ImportPackageName) {
+		ArrayList<String> ClassList = new ArrayList<String>();
+		String FullPath = SrcPath+ImportPackageName.replaceAll(".", File.separator).replace("*", "");
+	    File file = new File(FullPath);
+	    File[] PackageFile = file.listFiles();
+	    for(File Class : PackageFile) {
+	    	ClassList.add(Class.getName());
+	    }
+	    return ClassList;
+	}
+	
 	public static boolean classExists(String asterixImport, String className) {
 	    
         try {
@@ -23,13 +41,18 @@ public class Java {
 	public static String ConcatSrc(String path) {
 		if(!(path.endsWith("src") || path.endsWith("src"+File.separator))) {
 	
-          	if(path.endsWith(File.separator)) {
+          	if(path.endsWith(File.separator) &&!path.contains("src")) {
           		path+="src";
           	}
-          	else {
+          	
+          	else if(!path.endsWith(File.separator) &&!path.contains("src")) {
           		path+=File.separator+"src";
           	}
+          	else if (path.contains("src")) {
+          		path = path.substring(0,path.lastIndexOf("src")+3);
+          		System.out.println(path);
           }
+		}
 		
 		return path;
 	}
@@ -167,8 +190,9 @@ public class Java {
 		//else {
 			//FetchJavaFileNoPackage(SrcFile,ListPackage);
 		//}
+		if(DefaultPackage.size()!=0){
 		ListPackage.add(new Package("Default Package",DefaultPackage));
-		
+		}
 	}
 	   
 	

@@ -138,6 +138,10 @@ public int CheckedStatus;
  static int UpdateCheckedStatus(String ExceptionName, String ExceptionPath, int flag) throws IOException {
 	   
 	 try {
+		 if(ExceptionName.equals("Exception")) {
+			 return 0;
+		 }
+		 
 	        if (flag == 0) { // Load using system class loader for JRE classes
 	            try {
 	                Class<?> loadedClass = Class.forName(ExceptionPath);
@@ -259,15 +263,17 @@ public int CheckedStatus;
      	 Flag = 1;
 		}
 		else {
+			if(!Exc.equals("Exception")) {
 			 ExceptionPath = ExceptionImport(Exc,file);
+			}
 			// DefaultFlag = 0;
 
 		}
      	int CheckedFlag = UpdateCheckedStatus(Exc, ExceptionPath,Flag);
-     	if(CheckedFlag!=-1) {
+     	if(CheckedFlag!=-1 && Exc.equals("Exception")) {
      		int Default = 0;
      
-     		if(!isClassFromJRE(ExceptionPath)) {
+     		if(!Exc.equals("Exception") && !isClassFromJRE(ExceptionPath)) {
      			Default = 1;
      		}
      		ListException.add(new ExceptionStatus(Exc, CheckedFlag, Default));
