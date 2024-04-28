@@ -20,7 +20,15 @@ ImportStatus(String ImportName,int ImportStatus){
 //method fetch src class , jre class
 //method to see if conflict double wild card
 
-static boolean IsClassImportConflict(String ImportPackageName1,String ImportPackageName2) {
+
+static boolean IsDoubleWildCardConflictImport(String ImportPackageName1,String ImportPackageName2,ArrayList<ImportStatus> ImportList) {
+	for(ImportStatus Import : ImportList) {
+		return (Java.classExists(ImportPackageName1, Import.ImportName) && Java.classExists(ImportPackageName2, Import.ImportName));
+	}
+	return false;
+}
+
+static boolean IsClassImportConflict(String ImportPackageName1,String ImportPackageName2 , ArrayList<ImportStatus>ImportList) {
 	String ImportClassName1 = FetchImportClassName(ImportPackageName1);
 	String ImportClassName2 = FetchImportClassName(ImportPackageName2);
 	if(!ImportClassName1.equals("*") && !ImportClassName2.equals("*")&&ImportClassName2.equals(ImportClassName1)) {
@@ -33,8 +41,9 @@ static boolean IsClassImportConflict(String ImportPackageName1,String ImportPack
 		return true;
 	}
 	else if(ImportClassName1.equals("*") && ImportClassName2.equals("*")) {
-		return true;
+		return IsDoubleWildCardConflictImport(ImportPackageName1, ImportPackageName2, ImportList);
 	}
+	
 	return false;
 }
 
@@ -42,14 +51,14 @@ static String  FetchImportClassName(String ImportName) {
 	return ImportName.substring(ImportName.lastIndexOf(".")+1);
 }
 
-static void UpdateConflictFlag(ArrayList<ImportStatus> ImportList) {
+public static void UpdateConflictFlag(ArrayList<ImportStatus> ImportList) {
 	
 	for(int i = 0;i<ImportList.size();i++) {
 		String ImportPackageName1 = ImportList.get(i).ImportName;
 		
 		for(int j = i+1;j<ImportList.size();j++) {
 			String ImportPackageName2 = ImportList.get(j).ImportName; 
-			 if(IsClassImportConflict(ImportPackageName1, ImportPackageName2)) {
+			 if(IsClassImportConflict(ImportPackageName1, ImportPackageName2,ImportList)) {
 				ImportList.get(i).ConflictStatus = 1;
 				ImportList.get(j).ConflictStatus = 1;
 			

@@ -4,6 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*
+ * add conflict to  import tree 
+ * deal with * , * by looping on className And fetching existing class on each 
+ * if there is match then conflict exist
+ * maybe will add a function that detect a class that has no import
+ * make not used import be able to get removed or commanted and refresh the treee
+ */
+
 public class Java {
 	
 	
