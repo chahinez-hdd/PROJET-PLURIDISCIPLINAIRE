@@ -270,7 +270,7 @@ public int CheckedStatus;
 
 		}
      	int CheckedFlag = UpdateCheckedStatus(Exc, ExceptionPath,Flag);
-     	if(CheckedFlag!=-1 && Exc.equals("Exception")) {
+     	if(CheckedFlag!=-1 ) {
      		int Default = 0;
      
      		if(!Exc.equals("Exception") && !isClassFromJRE(ExceptionPath)) {
@@ -278,6 +278,7 @@ public int CheckedStatus;
      		}
      		ListException.add(new ExceptionStatus(Exc, CheckedFlag, Default));
      	}
+     	
 	}
 	return ListException;
 	  
