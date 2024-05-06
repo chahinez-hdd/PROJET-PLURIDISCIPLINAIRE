@@ -2,6 +2,7 @@ package application.BackEnd;
 
 import java.io.BufferedReader;
 
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,10 +18,6 @@ import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
-//Fix IsMethode and its fetch for Multiple throws
-//Fix fetchCatch for multiple exception
-//remove isthrows and its fetch methode
-//how to get classpath of javaproject
 
 
 

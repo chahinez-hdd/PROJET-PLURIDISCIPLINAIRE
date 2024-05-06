@@ -88,6 +88,7 @@ public class MetricController {
                     Button importsButton = new Button("Imports");
                     Button lineCodeButton = new Button("Line Code");
                     Button exceptionButton = new Button("Exception");
+                    Button EncapsulationButton = new Button("Encapsulation");
                     Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
                     cancelButton.setDefaultButton(true);
                     
@@ -160,11 +161,28 @@ public class MetricController {
                     });
 
                     
-                    
+                    EncapsulationButton.setOnAction(e-> {
+                         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Encapsulation.fxml"));
+                         Parent root = null;
+ 						try {
+ 							root = fxmlLoader.load();
+ 						} catch (IOException exception) {
+ 							// TODO Auto-generated catch block
+ 							exception.printStackTrace();
+ 						}
+                    	EncapsulationController encapsulationController = fxmlLoader.getController();
+                        encapsulationController.initialize(FilePath);
+                        Scene scene = new Scene(root);
+                        String css = this.getClass().getResource("/ressource/Css Folder/Exception.css").toExternalForm();
+                        scene.getStylesheets().add(css);
+                        Stage stage = new Stage();
+                        stage.setScene(scene);
+                        stage.show();
+                    });
                     
 
                     // Create an HBox container for the buttons
-                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton);
+                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton);
                     buttonBox.setAlignment(Pos.CENTER); // Center the buttons horizontally within the HBox
 
                     // Add buttons to the dialog pane

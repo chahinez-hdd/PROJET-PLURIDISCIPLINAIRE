@@ -14,13 +14,37 @@ public class Encapsulation {
 	int CompteurProtected;
 	double TauxEncapsulation;
 	
-	Encapsulation(int Total  ,int CompteurNone,int CompteurPublic , int CompteurPrivate,int CompteurProtected){
+	public Encapsulation(int Total  ,int CompteurNone,int CompteurPublic , int CompteurPrivate,int CompteurProtected){
 		this.Total = Total;
 		this.CompteurNone =CompteurNone;
 		this.CompteurPublic = CompteurPublic;
 		this.CompteurPrivate = CompteurPrivate;
 		this.CompteurProtected = CompteurProtected;
 		TauxEncapsulation = 0;
+	}
+	
+	public int GetNone() {
+		return this.CompteurNone;
+	}
+	
+	public int GetTotal() {
+		return this.Total;
+	}
+	
+	public Double GetTaux() {
+		return this.TauxEncapsulation;
+	}
+	
+	public int GetPublic() {
+		return this.CompteurPublic;
+	}
+	
+	public int GetPrivate() {
+		return this.CompteurPrivate;
+	}
+	
+	public int GetProtected() {
+		return this.CompteurProtected;
 	}
 	
 	
