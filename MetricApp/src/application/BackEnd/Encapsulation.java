@@ -120,18 +120,7 @@ public class Encapsulation {
 		return encapsulation;
 	}
 
-	public static void main(String[] args) {
-		String Path="C:\\Users\\DELL\\eclipse-workspace\\MetricApp\\src\\application\\BackEnd\\Test.java";
-		
-		File file = new File(Path);
-		Encapsulation encapsulation = EncapsulationFetch(file);
-       System.out.println(encapsulation.Total);
-       System.out.println(encapsulation.CompteurPublic);
-       System.out.println(encapsulation.CompteurNone);
-       System.out.println(encapsulation.CompteurPrivate);
-       System.out.println(encapsulation.CompteurProtected);
-       System.out.println(encapsulation.TauxEncapsulation);
-	}
+	
 
     
 }

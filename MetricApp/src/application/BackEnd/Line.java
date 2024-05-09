@@ -17,7 +17,7 @@ public class Line {
                     Line = Line.trim();
                     Line =  Qoute.RemoveQoute(Line);
 	                if(!RegularExpression.IsBracket(Line)) {
-                    if(Comment.ContainsComment(Line) ) {
+                    if(!Comment.ContainsComment(Line) ) {
 	                	++NbLine;
 	                }
                     else if(Comment.FinishedComment(Line) ) {
@@ -78,12 +78,59 @@ public class Line {
 		return NbLine;
 	}
 	
-	public static int CountLineAllLines(File file) {
+	 public static double CommentRation(File file) {
+		int TotalNumberOfLine = CountLineAllLines(file);
+		int CommentOnlyLine =CountLineCommentOnly(file);
+		return ((double)CommentOnlyLine/TotalNumberOfLine)*100;
+	}
+	
+	 public static double CodeRation(File file) {
+		int TotalNumberOfLine = CountLineAllLines(file);
+		int CodeOnlyLine = CountLinesContainsCode(file);
+		return ((double)CodeOnlyLine/TotalNumberOfLine)*100;
+	}
+	
+	 public static int CountCurlyBracesLine(File file) {
+	    int NbLine = 0;
+	    String Line = "";
+	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+	        while ((Line = reader.readLine()) != null) {
+	            Line = Line.trim();
+	            if (!Line.isEmpty() && (Line.equals("{")||Line.equals("}"))) {
+	                ++NbLine;
+	            }
+	          
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return NbLine;
+	}
+
+	public static int CountBlankLine(File file) {
 	    int NbLine = 0;
 	    String Line = "";
 	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	        while ((Line = reader.readLine()) != null) {
 	            System.out.println(Line);
+	            Line = Line.trim();
+	            if (Line.isEmpty()) {
+	                ++NbLine; // Increment if the line is empty
+	            }
+	          
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return NbLine;
+	}
+	
+	public static int CountLineAllLines(File file) {
+	    int NbLine = 0;
+	    String Line = "";
+	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+	        while ((Line = reader.readLine()) != null) {
+	            Line = Line.trim();
 	            if (Line.isEmpty()) {
 	                ++NbLine; // Increment if the line is empty
 	            }

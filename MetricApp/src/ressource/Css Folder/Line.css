@@ -10,15 +10,24 @@
 	
 }
 
+.parent-node-label{
+	-fx-font-size:35px;
+}
+
+parent-node-svg{
+	-fx-scale-x:1.8;
+	-fx-scale-y:1.8;
+}
+
 
 .leaf-node-label{
-	-fx-font-size:30px;
+	-fx-font-size:24px;
 }
 
 .leaf-node-svg{
 	-fx-fill:#1850F1;
-	-fx-scale-x:1.5;
-	-fx-scale-y:1.5;
+	-fx-scale-x:1.2;
+	-fx-scale-y:1.2;
 }
 
 /* Remove blue background on focused tree cells */
