@@ -1,5 +1,5 @@
 package TESTS;
-public class test2  {
+public class test2 extends test1 implements interace2 {
     int hi ;
     
     int hio ;
@@ -36,7 +36,22 @@ public String toString() {
     // TODO Auto-generated method stub
     return super.toString();
 }
-    
 
+    
+    public void test(){
+        System.out.println("test2");
+    }
+
+    public int test10(){
+        return 3;
+    }
+    public boolean test0(){
+        return true; 
+    }
+    @Override
+    public void interface0() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'interface0'");
+    }
 
 }

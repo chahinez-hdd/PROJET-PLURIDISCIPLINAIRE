@@ -2,22 +2,21 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Scanner;
+import TESTS.test2;
 
 
 
 public class RMSRCalculator {
     public static void main(String[] args) throws FileNotFoundException  {
-        String FilePath ="CHEMIN VERS LE FIHCIER QUI CONTIENT LA CLASSE ";
-        File file = new File(FilePath);
 
-
-        Class<?> clazz = MyClass.class; //ou vous allez tout simplement remplacer MyClass par le nom de la classe dont vous avez cree le fichier 
+        Class<?> clazz = test2.class; //ou vous allez tout simplement remplacer MyClass par le nom de la classe dont vous avez cree le fichier 
         //ou une classe que vous possedez deja dans votre projet
         
         int totalMethods = countTotalMethods(clazz);
         int overloadedMethods = countOverloadedMethods(clazz);
-        int overrideMethods = countOverrideMethods(file);
+        int overrideMethods = countOverrideMethods(clazz);
         
         double RatioMethodsSur = (double) overloadedMethods / totalMethods;
         double RatioMethodsRedef = (double) overrideMethods / totalMethods;
@@ -52,6 +51,7 @@ public class RMSRCalculator {
 
             if (isOverloaded(method, clazz,i)) {
                 overloadedCount++;
+                //System.out.println(method.getName()+"\n");
             }
             i++;
         }
@@ -61,27 +61,76 @@ public class RMSRCalculator {
     public static boolean isOverloaded(Method method, Class<?> clazz, int i) {
         // int totalMethods = countTotalMethods(clazz);
         Method[] methods = clazz.getDeclaredMethods();
-        Boolean overloaed=false;
+        Boolean overload=false;
         int j=0;
         for (Method method2 : methods){
-            if(method2.getName()==method.getName()&& (j!=i) )//parametres differents
-                overloaed=true;
+            if(method2.getName()==method.getName()&& (j!=i) && compareMethodParameters(method, method2)==false && compareMethodType(method, method2)==true)//parametres differents
+                overload=true;
             j++;
         }
-        return overloaed;
+        return overload;
     }
 
-    public static int countOverrideMethods (File file) throws FileNotFoundException{
-        Scanner sc = new Scanner(file);
-        int cpt=0;
-        while(sc.hasNextLine()){
-            if(sc.nextLine().contains("@Override")) cpt++;
+    public static int countOverrideMethods (Class<?> clazz) throws FileNotFoundException{
+        Method[] methodsClass = clazz.getDeclaredMethods();
+        int overridedCount=0;
+
+        for (Method method : methodsClass) {
+            if (isOverride(method, clazz)) {
+                overridedCount++;
+                //System.out.println(method.getName()+"\n");
+            }
         }
-        return cpt;
+        return overridedCount;
+        
+    }
+    
+    public static Boolean isOverride(Method method,Class<?> clazz) {
+    // Obtenez la classe de la classe dérivée (la classe actuelle)
+    //TRAITEMENT DE L'OVERRIDE DANS L'HERITAGE
+        Class<?> classesSup=clazz;
+        classesSup= classesSup.getSuperclass();
+        while (classesSup != null) {
+            Method[] methodsSuperClass = classesSup.getDeclaredMethods();
+            for (Method method2 : methodsSuperClass) {
+                if(method.getName()==method2.getName() && compareMethodParameters(method, method2)==true && compareMethodType(method, method2)==true)
+                   return true;
+                
+            }
+            classesSup= classesSup.getSuperclass();
+        }
+
+
+    //TRAITEMENT DE  L'OVERRIDE DANS LES INTERFACES
+        Class<?>[]interfacesTab = clazz.getInterfaces();
+            for(Class<?> Classinterface : interfacesTab){
+                for(Method method2 : Classinterface.getDeclaredMethods()){
+                    if(method.getName()==method2.getName() && compareMethodParameters(method, method2)==true && compareMethodType(method, method2)==true)
+                       return true;
+                }
+            }
+        return false;
+    }
+    
+    public static boolean compareMethodParameters(Method method1, Method method2) {
+        // Comparez les types de paramètres
+        Class<?>[] paramTypes1 = method1.getParameterTypes();
+        Class<?>[] paramTypes2 = method2.getParameterTypes();
+        if (!Arrays.equals(paramTypes1, paramTypes2)) {
+            return false;
+        }
+        //Si les types de paramètres 
+        return true;
+    }
+    public static boolean compareMethodType(Method method1, Method method2) {
+        // Comparez le type de retour
+        Class<?> returnType1 = method1.getReturnType();
+        Class<?> returnType2 = method2.getReturnType();
+        if (!returnType1.equals(returnType2)) {
+            return false;
+        }
+        // Si les types de retour sont identiques
+        return true;
     }
 
-
-
-  
 }
-
