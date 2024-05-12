@@ -15,6 +15,36 @@ import java.util.Scanner;
 public class Java {
 	
 	
+	public static void FetchPkgName(ArrayList<Package>ListPackage , String ParentPkgName,ArrayList<String>PkgNameList){
+		
+		 for (Package pack : ListPackage) {
+ 	        System.out.println(pack.PackageName);
+ 	            String PkgName="";
+ 	            if(ParentPkgName.equals("")) {
+ 	             PkgName=pack.PackageName;
+ 	            }
+ 	            else {
+ 	            	 PkgName=ParentPkgName+pack.PackageName;	
+ 	            }
+ 	            //System.out.println(ParentPkgName);
+ 	            //System.out.println(PkgName);
+ 	            PkgNameList.add(PkgName);
+ 	        
+ 	        
+ 	       if(pack.SubPackges.size()!=0) {
+ 	    	  String UpdatedParentPkgName;
+ 	    	   if(ParentPkgName.equals("")) {
+ 	    	    UpdatedParentPkgName =pack.PackageName+".";
+ 	    	   }else {
+ 	    		  UpdatedParentPkgName =ParentPkgName+pack.PackageName+".";
+ 	    	   }
+ 	    	   System.out.println("s");
+ 	    	   FetchPkgName(pack.SubPackges, UpdatedParentPkgName, PkgNameList);
+ 	       }
+ 	    }
+	}
+	
+	
 	public static boolean IsPackageSrc(String SrcPath , String ImportPackageName) {
 		String FullPath = SrcPath+ImportPackageName.replaceAll(".", File.separator).replace("*", "");
 	    File file = new File(FullPath);

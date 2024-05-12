@@ -40,12 +40,13 @@ import application.BackEnd.Package;
 import javafx.util.Callback;
 
 public class MetricController {
-
+	public static String PathProject;
     @FXML
     private TreeView<TreeItemData> treeView;
 
 
     public void initialize(String pathProject) {
+    	PathProject = pathProject;
         ArrayList<Package> listPackage = new ArrayList<>();
         File projectFile = new File(pathProject);
         File[] srcFile = projectFile.listFiles();
@@ -89,6 +90,7 @@ public class MetricController {
                     Button lineCodeButton = new Button("Line Code");
                     Button exceptionButton = new Button("Exception");
                     Button EncapsulationButton = new Button("Encapsulation");
+                    Button CollaborationButon  = new Button("CollaborationClass");
                     Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
                     cancelButton.setDefaultButton(true);
                     
@@ -180,9 +182,26 @@ public class MetricController {
                         stage.show();
                     });
                     
+                    CollaborationButon.setOnAction(e->{
+                    	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/MenuBoxCollaboration.fxml"));
+                         Parent root = null;
+ 						try {
+ 							root = fxmlLoader.load();
+ 						} catch (IOException exception) {
+ 							// TODO Auto-generated catch block
+ 							exception.printStackTrace();
+ 						}
+                    	
+                        Scene scene = new Scene(root);
+                        String css = this.getClass().getResource("/ressource/Css Folder/MenuBoxCollaboration.css").toExternalForm();
+                      scene.getStylesheets().add(css);
+                        Stage stage = new Stage();
+                        stage.setScene(scene);
+                        stage.show();
+                    });
 
                     // Create an HBox container for the buttons
-                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton);
+                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton,CollaborationButon);
                     buttonBox.setAlignment(Pos.CENTER); // Center the buttons horizontally within the HBox
 
                     // Add buttons to the dialog pane
