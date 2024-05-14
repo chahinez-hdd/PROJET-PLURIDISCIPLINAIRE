@@ -41,6 +41,7 @@ import javafx.util.Callback;
 
 public class MetricController {
 	public static String PathProject;
+	public static String FileSelectedPath;
     @FXML
     private TreeView<TreeItemData> treeView;
 
@@ -69,7 +70,8 @@ public class MetricController {
                   System.out.println("Leaf node selected: " + selectedItem.getValue().GetLabel());
                     // Show a dialog with options
                     String FilePath = RealPathConcat(getFileHierarchy(selectedItem),pathProject);
-                   System.out.println(FilePath);
+                    FileSelectedPath = FilePath;
+                    System.out.println(FilePath);
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setHeaderText("Java Metrics");
                     alert.setContentText("Choose an action to perform:");
