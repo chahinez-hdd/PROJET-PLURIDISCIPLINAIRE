@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
     public class CollaborationClasses  {
     
-     String FileName;
-     int NbInstanciation;
+   public  String FileName;
+     public int NbInstanciation;
     	
      CollaborationClasses(String FileName,int NbInstanciation){
     	 this.FileName= FileName;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
     	        for (String fileName : pack.FileNameList) {
     	            int count = 0;
     	            for (String className : ClassName) {
-    	                if (fileName.equals(className)) {
+    	                if (fileName.replace(".java", "").equals(className)) {
     	                    count++;
     	                }
     	            }

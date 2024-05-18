@@ -38,27 +38,41 @@ public class CollaborationController {
 	 
 
 
-	    public void initialize(String PkgPath) {
-	    	System.out.println(PkgPath);
-	        ArrayList<Package> listPackage = new ArrayList<>();
-	        File projectFile = new File(PkgPath);
-	        File[] srcFile = projectFile.listFiles();
-	        Java.FetchSrcJavaFile(srcFile, listPackage);
-	        TreeItemData rootItemData;
+	    public void initialize(String FolderName,ArrayList<Package>ListPackage) {
+	    	
 	        ArrayList<CollaborationClasses> CollaborationList= new ArrayList<>();
 	        ArrayList<String> ClassNames = new ArrayList<>();
 	        CollaborationClasses.FetchClassInstaciationName(new File(MetricController.FileSelectedPath), ClassNames);
-	        CollaborationClasses.NbCollaborationClass("", listPackage, ClassNames,CollaborationList);
-	        if(PkgPath.equals(MetricController.PathProject)) {
-	         rootItemData = new TreeItemData("Src Folder","M 10 4 H 4 c -1.1 0 -1.99 0.9 -1.99 2 L 2 18 c 0 1.1 0.9 2 2 2 h 16 c 1.1 0 2 -0.9 2 -2 V 8 c 0 -1.1 -0.9 -2 -2 -2 h -8 l -2 -2 Z");
+	        CollaborationClasses.NbCollaborationClass("", ListPackage, ClassNames,CollaborationList);
+            for(CollaborationClasses collab : CollaborationList) {
+            //	System.out.println("la class"+MetricController.FileSelectedPath.substring(MetricController.FileSelectedPath.lastIndexOf("\\")+1)+"A ete instancier "+collab.NbInstanciation+" dans "+collab.FileName);
+            System.out.println("La Class "+collab.FileName+" a ete instancier "+collab.NbInstanciation+" dans "+MetricController.FileSelectedPath.substring(MetricController.FileSelectedPath.lastIndexOf("\\")+1));
+            }
+	        String RootSvg="";
+	        if(FolderName.equals("Src Folder")) {
+	        	RootSvg="M 10 4 H 4 c -1.1 0 -1.99 0.9 -1.99 2 L 2 18 c 0 1.1 0.9 2 2 2 h 16 c 1.1 0 2 -0.9 2 -2 V 8 c 0 -1.1 -0.9 -2 -2 -2 h -8 l -2 -2 Z";
 	        }
 	        else {
-	        	 rootItemData = new TreeItemData(PkgPath.substring(PkgPath.lastIndexOf(File.pathSeparator)+1),"M 10 4 H 4 c -1.1 0 -1.99 0.9 -1.99 2 L 2 18 c 0 1.1 0.9 2 2 2 h 16 c 1.1 0 2 -0.9 2 -2 V 8 c 0 -1.1 -0.9 -2 -2 -2 h -8 l -2 -2 Z");
-		        
+	        	RootSvg ="M 3 3 v 8 h 8 V 3 H 3 Z m 6 6 H 5 V 5 h 4 v 4 Z m -6 4 v 8 h 8 v -8 H 3 Z m 6 6 H 5 v -4 h 4 v 4 Z m 4 -16 v 8 h 8 V 3 h -8 Z m 6 6 h -4 V 5 h 4 v 4 Z m -6 4 v 8 h 8 v -8 h -8 Z m 6 6 h -4 v -4 h 4 v 4 Z";
 	        }
-	        TreeItem<TreeItemData> rootItem = new TreeItem<>(rootItemData);
+	       
+	       
+	        TreeItemData rootItemData = new TreeItemData(FolderName,RootSvg);
+	        TreeItem<TreeItemData> rootItem = new TreeItem<>(rootItemData);   
+	        for(int i = 0 ; i<ListPackage.size();i++) {
+	        	if(FolderName.equals(ListPackage.get(i).PackageName)) {
+	        		for(String file : ListPackage.get(i).FileNameList) {
+	        			TreeItem<TreeItemData> fileItem = new TreeItem<>(new TreeItemData(file, "M 2 1.75 C 2 0.784 2.784 0 3.75 0 h 6.586 c 0.464 0 0.909 0.184 1.237 0.513 l 2.914 2.914 c 0.329 0.328 0.513 0.773 0.513 1.237 v 9.586 A 1.75 1.75 0 0 1 13.25 16 h -9.5 A 1.75 1.75 0 0 1 2 14.25 Z m 1.75 -0.25 a 0.25 0.25 0 0 0 -0.25 0.25 v 12.5 c 0 0.138 0.112 0.25 0.25 0.25 h 9.5 a 0.25 0.25 0 0 0 0.25 -0.25 V 6 h -2.75 A 1.75 1.75 0 0 1 9 4.25 V 1.5 Z m 6.75 0.062 V 4.25 c 0 0.138 0.112 0.25 0.25 0.25 h 2.688 l -0.011 -0.013 l -2.914 -2.914 l -0.013 -0.011 Z"));
+	                    rootItem.getChildren().add(fileItem);
+	        		}
+	        		ListPackage.remove(i);
+	        		break;
+	        	}
+	        }
+	        
+	        
 	        treeView.setRoot(rootItem);
-	        for (Package pkg : listPackage) {
+	        for (Package pkg : ListPackage) {
 	            TreeItem<TreeItemData> packageItem = createTreeItem(pkg);
 	            rootItem.getChildren().add(packageItem);
 	        }

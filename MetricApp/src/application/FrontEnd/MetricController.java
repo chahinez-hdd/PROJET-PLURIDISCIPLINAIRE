@@ -88,11 +88,12 @@ public class MetricController {
                     imageView.setFitHeight(60); // Set the preferred height
                  //   alert.getGraphic().getStyleClass().add("imageView");
                     alert.getButtonTypes().remove(ButtonType.OK); 
-                    Button importsButton = new Button("Imports");
-                    Button lineCodeButton = new Button("Line Code");
-                    Button exceptionButton = new Button("Exception");
-                    Button EncapsulationButton = new Button("Encapsulation");
-                    Button CollaborationButon  = new Button("CollaborationClass");
+                    Button importsButton = new Button("ICM");
+                    Button lineCodeButton = new Button("JAX");
+                    Button exceptionButton = new Button("JEA");
+                    Button EncapsulationButton = new Button("TE");
+                    Button SwingButton = new Button("SM");
+                    Button PolymorphismeButon  = new Button("RMSR");
                     Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
                     cancelButton.setDefaultButton(true);
                     
@@ -164,6 +165,24 @@ public class MetricController {
 
                     });
 
+                    SwingButton.setOnAction(e->{
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/SwingComponent.fxml"));
+                        Parent root = null;
+						try {
+							root = fxmlLoader.load();
+						} catch (IOException exception) {
+							// TODO Auto-generated catch block
+							exception.printStackTrace();
+						}
+                   	SwingComponentController swingController = fxmlLoader.getController();
+                       swingController.initialize(FilePath);
+                       Scene scene = new Scene(root);
+                       String css = this.getClass().getResource("/ressource/Css Folder/Swing.css").toExternalForm();
+                       scene.getStylesheets().add(css);
+                       Stage stage = new Stage();
+                       stage.setScene(scene);
+                       stage.show();
+                   });
                     
                     EncapsulationButton.setOnAction(e-> {
                          FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Encapsulation.fxml"));
@@ -183,7 +202,7 @@ public class MetricController {
                         stage.setScene(scene);
                         stage.show();
                     });
-                    
+                    /*
                     CollaborationButon.setOnAction(e->{
                     	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/MenuBoxCollaboration.fxml"));
                          Parent root = null;
@@ -201,9 +220,9 @@ public class MetricController {
                         stage.setScene(scene);
                         stage.show();
                     });
-
+*/
                     // Create an HBox container for the buttons
-                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton,CollaborationButon);
+                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton,SwingButton,PolymorphismeButon);
                     buttonBox.setAlignment(Pos.CENTER); // Center the buttons horizontally within the HBox
 
                     // Add buttons to the dialog pane

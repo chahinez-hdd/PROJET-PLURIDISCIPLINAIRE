@@ -18,13 +18,13 @@
 }
 
 .parent-node-default-svg{
-	-fx-fill:#009688;
+	-fx-fill:#23B5CE;
     -fx-scale-x:1.15;
  	-fx-scale-y:1.15;
  }
  
  .parent-node-notdefault-svg{
- 	-fx-fill:#00BCD4;
+ 	-fx-fill:#23B5CE;
  	-fx-scale-x:1.2;
  	-fx-scale-y:1.2;
  }

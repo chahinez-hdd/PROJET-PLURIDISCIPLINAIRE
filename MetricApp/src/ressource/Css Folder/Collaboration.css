@@ -1,15 +1,19 @@
+.root {
+    -fx-background-color: white;
+}
+
+
+
+
 .root-node-label{
 	-fx-font-size:45px;
-     
-     }
+	
+}
 
- 
 .root-node-svg{
-	
-	-fx-fill:#FF0000;
-	-fx-scale-x:1.9;
-	-fx-scale-y:1.9;
-	
+	-fx-fill:#CB9327;
+	-fx-scale-x:1.5;
+	-fx-scale-y:1.5;
 }
 
 
@@ -17,16 +21,8 @@
 	-fx-font-size:35px;
 }
 
-.parent-node-default-svg{
-	-fx-fill:#23B5CE;
-    -fx-scale-x:1.15;
- 	-fx-scale-y:1.15;
- }
- 
- .parent-node-notdefault-svg{
- 	-fx-fill:#23B5CE;
- 	-fx-scale-x:1.2;
- 	-fx-scale-y:1.2;
+.parent-node-svg{
+	-fx-fill:#CB9327;
  }
 
 
@@ -36,7 +32,7 @@
 }
 
 .leaf-node-svg{
-	-fx-fill:#39A098;
+	-fx-fill:#0B75B2;
 }
 
 /* Remove blue background on focused tree cells */
@@ -44,3 +40,8 @@
     -fx-background-color:  transparent;
     -fx-border-color:blue;
 }
+
+
+
+
+

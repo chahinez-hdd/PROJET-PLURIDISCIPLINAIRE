@@ -7,7 +7,8 @@ public class TreeItemData {
     public SVGPath svgPath;
 
     TreeItemData(String label, String svgPathContent) {
-        this.label = label;
+        
+    	this.label = label;
         this.svgPath = new SVGPath();
         if (svgPathContent != null) {
             this.svgPath.setContent(svgPathContent);

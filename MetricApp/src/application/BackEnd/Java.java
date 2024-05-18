@@ -200,7 +200,7 @@ public class Java {
 		
  }
 	//Fetch Java File In Case Of Default Package
-	static void FetchJavaFileNoPackage(File[]SrcFile,ArrayList<Package>ListPackage) {
+	public static void FetchJavaFileNoPackage(File[]SrcFile,ArrayList<Package>ListPackage) {
 		ArrayList<String>ListInfoFile=new ArrayList<String>();
 		for(File file : SrcFile) {
 			if(file.getName().endsWith(".java")) {
@@ -210,8 +210,33 @@ public class Java {
 		ListPackage.add(new Package("Default Package",ListInfoFile));
 	}
 	
+	
+	
+	public static void FetchJavaFilePkg(File[]PkgFile,ArrayList<Package>ListPackage) {
+        ArrayList<String>DirectPackage=new ArrayList<>();
+		
+		for(File file : PkgFile) {
+			//System.out.println(file.getName());
+				if(file.isDirectory() && file.listFiles()!=null &&IsJavaPackageNotEmpty(file)) {
+					//System.out.println(file.getName());
+					FetchJavaFile(file,ListPackage);
+				}
+				else if(file.isFile() && file.getName().endsWith(".java")) {
+					DirectPackage.add(file.getName());
+				}
+			}
+			
+		//else {
+			//FetchJavaFileNoPackage(SrcFile,ListPackage);
+		//}
+		if(DirectPackage.size()!=0){
+		ListPackage.add(new Package(PkgFile[0].getParent().substring(PkgFile[0].getParent().lastIndexOf("\\")+1),DirectPackage));
+		}
+	}
+	
 	//Fetch Java File From Src Folder
 	public static void FetchSrcJavaFile(File[]SrcFile,ArrayList<Package>ListPackage) {
+
 		ArrayList<String>DefaultPackage=new ArrayList<>();
 		
 		for(File file : SrcFile) {

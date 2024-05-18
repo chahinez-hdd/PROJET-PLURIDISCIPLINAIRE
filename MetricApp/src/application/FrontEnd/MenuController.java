@@ -43,7 +43,8 @@ public class MenuController implements Initializable{
 	}
 	
 	public void CollaborationTree(ActionEvent event) {
-	    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Collaboration.fxml"));
+	    ArrayList<Package>ListPackage = new ArrayList<>();
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Collaboration.fxml"));
         Parent root = null;
 		try {
 			root = fxmlLoader.load();
@@ -55,15 +56,44 @@ public class MenuController implements Initializable{
       System.out.println(MenuBox.getValue());
       System.out.println(MetricController.PathProject+File.separator+MenuBox.getValue().replace(".", File.separator));
       String FilePath ="";
-      if(MetricController.PathProject.endsWith(File.separator)){
+      String FolderName ="";
+     if(MenuBox.getValue().equals("Src Folder")) {
+    	 File file = new File(MetricController.PathProject);
+    	 Java.FetchSrcJavaFile(file.listFiles(), ListPackage);
+    	 FolderName = "Src Folder";
+     }
+     else if(MenuBox.getValue().equals("Default Package")) {
+    	 File file = new File(MetricController.PathProject);
+    	 Java.FetchJavaFileNoPackage(file.listFiles(), ListPackage);
+    	 FolderName = "Default Package";
+     }
+     else if(MetricController.PathProject.endsWith(File.separator)){
     		FilePath =  MetricController.PathProject+MenuBox.getValue().replace(".", File.separator);
+    		File file = new File(FilePath); 
+    		Java.FetchJavaFilePkg(file.listFiles(), ListPackage);
+    		FolderName = FilePath.substring(FilePath.lastIndexOf("\\")+1);
       }else {
     	  FilePath =  MetricController.PathProject+File.separator+MenuBox.getValue().replace(".", File.separator);
+    	  File file = new File(FilePath); 
+  		  Java.FetchJavaFilePkg(file.listFiles(), ListPackage);
+  		FolderName = FilePath.substring(FilePath.lastIndexOf("\\")+1);
       }
-    		  collaborationController.initialize(FilePath);
+     
+     if(!FilePath.endsWith("\\")) {
+		 FilePath = FilePath+"\\";
+	 }
+     
+    		  collaborationController.initialize(FolderName,ListPackage);
        Scene scene = new Scene(root);
-       String css = this.getClass().getResource("/ressource/Css Folder/application.css").toExternalForm();
-       scene.getStylesheets().add(css);
+      
+      
+       if(MetricController.PathProject.equals(FilePath)) {
+    	   scene.getStylesheets().add(this.getClass().getResource("/ressource/Css Folder/application.css").toExternalForm());
+       }else {
+    	   scene.getStylesheets().add(this.getClass().getResource("/ressource/Css Folder/Collaboration.css").toExternalForm());
+       }
+       
+       
        Stage stage = new Stage();
        stage.setScene(scene);
        stage.show();
