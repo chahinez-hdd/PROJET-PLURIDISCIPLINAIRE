@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import application.BackEnd.Line;
+import application.BackEnd.SoftwareSizeMetrices;
 import application.FrontEnd.ImportController.CustomTreeCell;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -27,9 +28,11 @@ public class LineController {
     public void initialize(String FilePath) {
         File file = new File(FilePath);
         LineLabel.setText("Number Of Lines Of "+file.getName());
-        TreeItemData rootItemData = new TreeItemData("Total Number Of Line "+Line.CountLineAllLines(file),"M 2 17 h 2 v 0.5 H 3 v 1 h 1 v 0.5 H 2 v 1 h 3 v -4 H 2 v 1 Z m 1 -9 h 1 V 4 H 2 v 1 h 1 v 3 Z m -1 3 h 1.8 L 2 13.1 v 0.9 h 3 v -1 H 3.2 L 5 10.9 V 10 H 2 v 1 Z m 5 -6 v 2 h 14 V 5 H 7 Z m 0 14 h 14 v -2 H 7 v 2 Z m 0 -6 h 14 v -2 H 7 v 2 Z");
-        TreeItem<TreeItemData> rootItem = new TreeItem<>(rootItemData);
+        String RootSvg = "M 16.44 15.38 C 16.79 14.84 17 14.19 17 13.5 c 0 -1.93 -1.57 -3.5 -3.5 -3.5 S 10 11.57 10 13.5 s 1.57 3.5 3.5 3.5 c 0.69 0 1.34 -0.21 1.88 -0.56 L 17.94 19 L 19 17.94 L 16.44 15.38 Z M 13.5 15.5 c -1.1 0 -2 -0.9 -2 -2 s 0.9 -2 2 -2 s 2 0.9 2 2 S 14.6 15.5 13.5 15.5 Z M 17.78 2 L 19 2.87 l -3.88 5.9 h 0 C 14.61 8.59 14.07 8.5 13.5 8.5 L 17.78 2 Z M 13.5 8.5 c -0.58 0 -1.13 0.1 -1.65 0.28 l 0 0 l -0.78 -1.1 l -3.41 5.36 l -2.48 -2.97 l -2.96 4.81 L 1 14 l 4 -6.5 l 2.5 3 L 11 5 L 13.5 8.5 Z";
+        TreeItem<TreeItemData> rootItem = new TreeItem<>(new TreeItemData("Java Analyzer ",RootSvg));
         treeView.setRoot(rootItem);
+        TreeItemData ParentLineItemData = new TreeItemData("Total Number Of Line "+Line.CountLineAllLines(file),"M 2 17 h 2 v 0.5 H 3 v 1 h 1 v 0.5 H 2 v 1 h 3 v -4 H 2 v 1 Z m 1 -9 h 1 V 4 H 2 v 1 h 1 v 3 Z m -1 3 h 1.8 L 2 13.1 v 0.9 h 3 v -1 H 3.2 L 5 10.9 V 10 H 2 v 1 Z m 5 -6 v 2 h 14 V 5 H 7 Z m 0 14 h 14 v -2 H 7 v 2 Z m 0 -6 h 14 v -2 H 7 v 2 Z");
+        TreeItem<TreeItemData> ParentLineItem = new TreeItem<>(ParentLineItemData);
         String StatSvgPath="M 9 17 H 7 v -7 h 2 v 7 Z m 4 0 h -2 V 7 h 2 v 10 Z m 4 0 h -2 v -4 h 2 v 4 Z m 2.5 2.1 h -15 V 5 h 15 v 14.1 Z m 0 -16.1 h -15 c -1.1 0 -2 0.9 -2 2 v 14 c 0 1.1 0.9 2 2 2 h 15 c 1.1 0 2 -0.9 2 -2 V 5 c 0 -1.1 -0.9 -2 -2 -2 Z";
         String RatioSvgPath="M 11 5.08 V 2 C 6 2.5 2 6.81 2 12 s 4 9.5 9 10 v -3.08 c -3 -0.48 -6 -3.4 -6 -6.92 S 8 5.56 11 5.08 Z M 18.97 11 H 22 c -0.47 -5 -4 -8.53 -9 -9 v 3.08 C 16 5.51 18.54 8 18.97 11 Z M 13 18.92 V 22 c 5 -0.47 8.53 -4 9 -9 h -3.03 C 18.54 16 16 18.49 13 18.92 Z";
         String CodeSvgPath="m 11.28 3.22 l 4.25 4.25 a 0.75 0.75 0 0 1 0 1.06 l -4.25 4.25 a 0.749 0.749 0 0 1 -1.275 -0.326 a 0.749 0.749 0 0 1 0.215 -0.734 L 13.94 8 l -3.72 -3.72 a 0.749 0.749 0 0 1 0.326 -1.275 a 0.749 0.749 0 0 1 0.734 0.215 Z m -6.56 0 a 0.751 0.751 0 0 1 1.042 0.018 a 0.751 0.751 0 0 1 0.018 1.042 L 2.06 8 l 3.72 3.72 a 0.749 0.749 0 0 1 -0.326 1.275 a 0.749 0.749 0 0 1 -0.734 -0.215 L 0.47 8.53 a 0.75 0.75 0 0 1 0 -1.06 Z";
@@ -47,9 +50,33 @@ public class LineController {
         
         CommentStat.getChildren().add(new TreeItem<>(new TreeItemData("Comment Ratio "+RatioCommentValue,RatioSvgPath)));
         CommentStat.getChildren().add(new TreeItem<>(new TreeItemData("Line Of Comment Only "+Line.CountLineCommentOnly(file),CommentSvgPath)));
-        rootItem.getChildren().add(CodeStat);
-        rootItem.getChildren().add(CommentStat);
+        ParentLineItem.getChildren().add(CodeStat);
+        ParentLineItem.getChildren().add(CommentStat);
         
+        
+        SoftwareSizeMetrices softwareSizeMetrices = SoftwareSizeMetrices.FetchSoftware(file); 
+        String ParentSoftwareSvg="M 9.4 16.6 L 4.8 12 l 4.6 -4.6 L 8 6 l -6 6 l 6 6 l 1.4 -1.4 Z m 5.2 0 l 4.6 -4.6 l -4.6 -4.6 L 16 6 l 6 6 l -6 6 l -1.4 -1.4 Z";
+        String ParentSvg="M 16.5 12 c 1.38 0 2.49 -1.12 2.49 -2.5 S 17.88 7 16.5 7 C 15.12 7 14 8.12 14 9.5 s 1.12 2.5 2.5 2.5 Z M 9 11 c 1.66 0 2.99 -1.34 2.99 -3 S 10.66 5 9 5 C 7.34 5 6 6.34 6 8 s 1.34 3 3 3 Z m 7.5 3 c -1.83 0 -5.5 0.92 -5.5 2.75 V 19 h 11 v -2.25 c 0 -1.83 -3.67 -2.75 -5.5 -2.75 Z M 9 13 c -2.33 0 -7 1.17 -7 3.5 V 19 h 7 v -2.25 c 0 -0.85 0.33 -2.34 2.37 -3.47 C 10.5 13.1 9.66 13 9 13 Z";
+        String NumberSvg="M 18 4 H 6 v 2 l 6.5 6 L 6 18 v 2 h 12 v -3 h -7 l 5 -5 l -5 -5 h 7 Z";
+        String InterfaceSvg="M 19.14 12.94 c 0.04 -0.3 0.06 -0.61 0.06 -0.94 c 0 -0.32 -0.02 -0.64 -0.07 -0.94 l 2.03 -1.58 c 0.18 -0.14 0.23 -0.41 0.12 -0.61 l -1.92 -3.32 c -0.12 -0.22 -0.37 -0.29 -0.59 -0.22 l -2.39 0.96 c -0.5 -0.38 -1.03 -0.7 -1.62 -0.94 L 14.4 2.81 c -0.04 -0.24 -0.24 -0.41 -0.48 -0.41 h -3.84 c -0.24 0 -0.43 0.17 -0.47 0.41 L 9.25 5.35 C 8.66 5.59 8.12 5.92 7.63 6.29 L 5.24 5.33 c -0.22 -0.08 -0.47 0 -0.59 0.22 L 2.74 8.87 C 2.62 9.08 2.66 9.34 2.86 9.48 l 2.03 1.58 C 4.84 11.36 4.8 11.69 4.8 12 s 0.02 0.64 0.07 0.94 l -2.03 1.58 c -0.18 0.14 -0.23 0.41 -0.12 0.61 l 1.92 3.32 c 0.12 0.22 0.37 0.29 0.59 0.22 l 2.39 -0.96 c 0.5 0.38 1.03 0.7 1.62 0.94 l 0.36 2.54 c 0.05 0.24 0.24 0.41 0.48 0.41 h 3.84 c 0.24 0 0.44 -0.17 0.47 -0.41 l 0.36 -2.54 c 0.59 -0.24 1.13 -0.56 1.62 -0.94 l 2.39 0.96 c 0.22 0.08 0.47 0 0.59 -0.22 l 1.92 -3.32 c 0.12 -0.22 0.07 -0.47 -0.12 -0.61 L 19.14 12.94 Z M 12 15.6 c -1.98 0 -3.6 -1.62 -3.6 -3.6 s 1.62 -3.6 3.6 -3.6 s 3.6 1.62 3.6 3.6 S 13.98 15.6 12 15.6 Z";
+        String MethodSvg ="M 17.09 18.5 l -3.47 -3.47 L 12.5 18 L 10 10 l 8 2.5 l -2.97 1.11 l 3.47 3.47 L 17.09 18.5 Z M 10 3.5 c -3.58 0 -6.5 2.92 -6.5 6.5 s 2.92 6.5 6.5 6.5 c 0.15 0 0.3 -0.01 0.45 -0.02 l 0.46 1.46 C 10.61 17.98 10.31 18 10 18 c -4.42 0 -8 -3.58 -8 -8 s 3.58 -8 8 -8 l 0 0 c 4.42 0 8 3.58 8 8 c 0 0.31 -0.02 0.61 -0.05 0.91 l -1.46 -0.46 c 0.01 -0.15 0.02 -0.3 0.02 -0.45 C 16.5 6.42 13.58 3.5 10 3.5 M 10 6.5 c -1.93 0 -3.5 1.57 -3.5 3.5 c 0 1.76 1.31 3.23 3.01 3.47 L 10 15 c 0 0 -0.01 0 -0.01 0 C 7.23 15 5 12.76 5 10 c 0 -2.76 2.24 -5 5 -5 l 0 0 c 2.76 0 5 2.23 5 4.99 c 0 0 0 0.01 0 0.01 l -1.53 -0.49 C 13.23 7.81 11.76 6.5 10 6.5";
+        String ClassSvg="M 2 1.75 C 2 0.784 2.784 0 3.75 0 h 6.586 c 0.464 0 0.909 0.184 1.237 0.513 l 2.914 2.914 c 0.329 0.328 0.513 0.773 0.513 1.237 v 9.586 A 1.75 1.75 0 0 1 13.25 16 h -9.5 A 1.75 1.75 0 0 1 2 14.25 Z m 1.75 -0.25 a 0.25 0.25 0 0 0 -0.25 0.25 v 12.5 c 0 0.138 0.112 0.25 0.25 0.25 h 9.5 a 0.25 0.25 0 0 0 0.25 -0.25 V 6 h -2.75 A 1.75 1.75 0 0 1 9 4.25 V 1.5 Z m 6.75 0.062 V 4.25 c 0 0.138 0.112 0.25 0.25 0.25 h 2.688 l -0.011 -0.013 l -2.914 -2.914 l -0.013 -0.011 Z";
+        TreeItem<TreeItemData> SoftwareParent = new TreeItem<>(new TreeItemData("Software ",ParentSoftwareSvg));
+        TreeItem<TreeItemData> NbMethod = new TreeItem<>(new TreeItemData("Number Of Methods "+softwareSizeMetrices.MethodList.size(),NumberSvg));
+        for(String method : softwareSizeMetrices.MethodList) {
+        	NbMethod.getChildren().add(new TreeItem<TreeItemData>(new TreeItemData(method,MethodSvg)));
+        }
+        TreeItem<TreeItemData> NbInterface = new TreeItem<>(new TreeItemData("Number Of Interfaces "+softwareSizeMetrices.InterfaceList.size(),NumberSvg));
+        for(String Interface : softwareSizeMetrices.InterfaceList) {
+        	NbMethod.getChildren().add(new TreeItem<TreeItemData>(new TreeItemData(Interface,Interface)));
+        }
+        TreeItem<TreeItemData> Parent = new TreeItem<>(new TreeItemData("Parent ",ParentSvg));
+        Parent.getChildren().add(new TreeItem<TreeItemData>(new TreeItemData(softwareSizeMetrices.Parent,ClassSvg)));
+        SoftwareParent.getChildren().add(NbMethod);
+        SoftwareParent.getChildren().add(NbInterface);
+        SoftwareParent.getChildren().add(Parent);
+        rootItem.getChildren().add(ParentLineItem);
+        rootItem.getChildren().add(SoftwareParent);
         setTreeViewStyle();
     }
 
@@ -102,6 +129,7 @@ public class LineController {
                         svgPath.getStyleClass().setAll("root-node-svg");
                     } else if (!treeItem.isLeaf()) {
                         label.getStyleClass().setAll("parent-node-label");
+                        label.getStyleClass().setAll("parent-node-svg");
                         
                     } else {
                         label.getStyleClass().setAll("leaf-node-label");

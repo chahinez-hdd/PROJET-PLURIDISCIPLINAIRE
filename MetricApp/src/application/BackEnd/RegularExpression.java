@@ -29,7 +29,41 @@ public class RegularExpression {
 	}
 	
 	
-
+	public static ArrayList<String> FetchImplements(String Line){
+		ArrayList<String> ImplementName = new ArrayList<>();
+		Pattern pattern = Pattern.compile("implements\\s+(\\w+)|(?:\\s*\\,\\s*(\\w+)\\s*)");	
+	    Matcher matcher = pattern.matcher(Line);
+	    while (matcher.find()) {
+	   
+	     
+	        String className = matcher.group(1);
+	        if(className==null) {
+	        	className = matcher.group(2);
+	        }
+	        ImplementName.add(className);
+	    }
+	    return ImplementName;
+	}
+	
+	public static String FetchExtends(String Line) {
+		Pattern pattern = Pattern.compile("extends\\s+(\\w+)");
+	    Matcher matcher = pattern.matcher(Line);
+	    while (matcher.find()) {
+	        String className = matcher.group(1);
+	        return className;
+	    }
+	    return "";
+	}
+	
+	
+    public static boolean IsClass(String Line) {
+    	String AcessModifiersPattern="(?:private\\s+|protected\\s+|public\\s+)?";
+    	String NonAcessModifiersPattern="(?:static\\s+|final\\s+|abstract\\s+)?";
+    	String ExtendsPettern="(?:\\s+extends\\s+\\b\\w+\\b)?";
+    	String ImplementsPattern="(?:\\s+implements\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*)?";
+    	String ClassPattern=AcessModifiersPattern+NonAcessModifiersPattern+"class\\s+\\w+"+ExtendsPettern+ImplementsPattern+"\\s*(?:\\{)?";
+    	return Line.matches(ClassPattern);
+    }
 	
 	static boolean IsAnnotation(String Line) {
 		return Line.startsWith("@") && !Line.equals("@Overload") && !Line.equals("@Override") ;
