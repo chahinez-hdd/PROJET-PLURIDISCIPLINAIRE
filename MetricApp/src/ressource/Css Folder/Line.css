@@ -5,8 +5,8 @@
 
 .root-node-svg{
 	-fx-fill:lightblue;
-	-fx-scale-x:2;
-	-fx-scale-y:2;
+	-fx-scale-x:2.1;
+	-fx-scale-y:2.1;
 	
 }
 
@@ -15,8 +15,8 @@
 }
 
 .parent-node-svg{
-	-fx-scale-x:1.8;
-	-fx-scale-y:1.8;
+	-fx-scale-x:1.65;
+	-fx-scale-y:1.65;
 }
 
 
@@ -26,8 +26,8 @@
 
 .leaf-node-svg{
 	-fx-fill:#1850F1;
-	-fx-scale-x:1.2;
-	-fx-scale-y:1.2;
+	-fx-scale-x:1.25;
+	-fx-scale-y:1.25;
 }
 
 /* Remove blue background on focused tree cells */

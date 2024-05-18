@@ -29,7 +29,7 @@ public class LineController {
         File file = new File(FilePath);
         LineLabel.setText("Number Of Lines Of "+file.getName());
         String RootSvg = "M 16.44 15.38 C 16.79 14.84 17 14.19 17 13.5 c 0 -1.93 -1.57 -3.5 -3.5 -3.5 S 10 11.57 10 13.5 s 1.57 3.5 3.5 3.5 c 0.69 0 1.34 -0.21 1.88 -0.56 L 17.94 19 L 19 17.94 L 16.44 15.38 Z M 13.5 15.5 c -1.1 0 -2 -0.9 -2 -2 s 0.9 -2 2 -2 s 2 0.9 2 2 S 14.6 15.5 13.5 15.5 Z M 17.78 2 L 19 2.87 l -3.88 5.9 h 0 C 14.61 8.59 14.07 8.5 13.5 8.5 L 17.78 2 Z M 13.5 8.5 c -0.58 0 -1.13 0.1 -1.65 0.28 l 0 0 l -0.78 -1.1 l -3.41 5.36 l -2.48 -2.97 l -2.96 4.81 L 1 14 l 4 -6.5 l 2.5 3 L 11 5 L 13.5 8.5 Z";
-        TreeItem<TreeItemData> rootItem = new TreeItem<>(new TreeItemData("Java Analyzer ",RootSvg));
+        TreeItem<TreeItemData> rootItem = new TreeItem<>(new TreeItemData(" Java Analyzer ",RootSvg));
         treeView.setRoot(rootItem);
         TreeItemData ParentLineItemData = new TreeItemData("Total Number Of Line "+Line.CountLineAllLines(file),"M 2 17 h 2 v 0.5 H 3 v 1 h 1 v 0.5 H 2 v 1 h 3 v -4 H 2 v 1 Z m 1 -9 h 1 V 4 H 2 v 1 h 1 v 3 Z m -1 3 h 1.8 L 2 13.1 v 0.9 h 3 v -1 H 3.2 L 5 10.9 V 10 H 2 v 1 Z m 5 -6 v 2 h 14 V 5 H 7 Z m 0 14 h 14 v -2 H 7 v 2 Z m 0 -6 h 14 v -2 H 7 v 2 Z");
         TreeItem<TreeItemData> ParentLineItem = new TreeItem<>(ParentLineItemData);
@@ -83,7 +83,7 @@ public class LineController {
 
     
     
-    
+
     private void setTreeViewStyle() {
     	treeView.setCellFactory(new Callback<TreeView<TreeItemData>, TreeCell<TreeItemData>>() {
     	    @Override
@@ -129,7 +129,11 @@ public class LineController {
                         svgPath.getStyleClass().setAll("root-node-svg");
                     } else if (!treeItem.isLeaf()) {
                         label.getStyleClass().setAll("parent-node-label");
-                        label.getStyleClass().setAll("parent-node-svg");
+                       
+                        svgPath.getStyleClass().setAll("parent-node-svg");
+                        
+                       
+                        	
                         
                     } else {
                         label.getStyleClass().setAll("leaf-node-label");
@@ -155,7 +159,7 @@ public class LineController {
                     // Clear the text label if not available
                     label.setText(null);
                 }
-                label.setPadding(new Insets(0, 0, 0, 15)); // Example padding: 10px on the right
+                label.setPadding(new Insets(0, 0, 0, 10)); // Example padding: 10px on the right
                 // Set the HBox as the graphic content
                 setGraphic(hbox);
             }
@@ -170,4 +174,6 @@ public class LineController {
         
   
 }
+
+
 

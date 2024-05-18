@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import application.BackEnd.Java;
 import application.BackEnd.Package;
+import application.BackEnd.RMSRCalculator;
 import javafx.util.Callback;
 
 public class MetricController {
@@ -96,6 +97,7 @@ public class MetricController {
                     Button PolymorphismeButon  = new Button("RMSR");
                     Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
                     cancelButton.setDefaultButton(true);
+                    
                     
                     
                     importsButton.setOnAction(e -> {
@@ -202,9 +204,9 @@ public class MetricController {
                         stage.setScene(scene);
                         stage.show();
                     });
-                    /*
-                    CollaborationButon.setOnAction(e->{
-                    	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/MenuBoxCollaboration.fxml"));
+                    
+                    PolymorphismeButon.setOnAction(e->{
+                    	 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/RMRS.fxml"));
                          Parent root = null;
  						try {
  							root = fxmlLoader.load();
@@ -212,15 +214,16 @@ public class MetricController {
  							// TODO Auto-generated catch block
  							exception.printStackTrace();
  						}
-                    	
+ 				       RMRScontroller rmrsController = fxmlLoader.getController();
+                        rmrsController.initialize(FilePath,selectedItem.getValue().GetLabel());
                         Scene scene = new Scene(root);
-                        String css = this.getClass().getResource("/ressource/Css Folder/MenuBoxCollaboration.css").toExternalForm();
+                        String css = this.getClass().getResource("/ressource/Css Folder/application.css").toExternalForm();
                       scene.getStylesheets().add(css);
                         Stage stage = new Stage();
                         stage.setScene(scene);
                         stage.show();
                     });
-*/
+
                     // Create an HBox container for the buttons
                     HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton,SwingButton,PolymorphismeButon);
                     buttonBox.setAlignment(Pos.CENTER); // Center the buttons horizontally within the HBox
