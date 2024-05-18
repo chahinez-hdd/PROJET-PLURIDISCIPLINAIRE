@@ -1,4 +1,4 @@
-package chahinez;
+package application;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
@@ -13,14 +13,14 @@ import java.net.URLClassLoader;
 
 
 public class RMSRCalculator {
-	int totalMethods = 0;
-    int overloadedMethods = 0;
-    int overrideMethods = 0;
+	 int totalMethods = 0;
+     int overloadedMethods = 0;
+     int overrideMethods = 0;
     
     double RatioMethodsSur = 0;
     double RatioMethodsRedef = 0;
     double rsmr = 0;
-    public  RMSRCalculator fetchRMSR(String path,String filename) throws FileNotFoundException, MalformedURLException, ClassNotFoundException  {
+    public static RMSRCalculator fetchRMSR(String path,String filename) throws FileNotFoundException, MalformedURLException, ClassNotFoundException  {
     	
     	RMSRCalculator t = new RMSRCalculator();
     	path = path.replace("\\src\\", "\\bin\\");
@@ -34,9 +34,9 @@ public class RMSRCalculator {
          t.overloadedMethods = countOverloadedMethods(loadedClass);
          t.overrideMethods = countOverrideMethods(loadedClass);
         
-         t.RatioMethodsSur = (double) overloadedMethods / totalMethods;
-         t.RatioMethodsRedef = (double) overrideMethods / totalMethods;
-         t.rsmr = (double) (overrideMethods+overrideMethods) / totalMethods;
+         t.RatioMethodsSur = (double) t.overloadedMethods / t.totalMethods;
+         t.RatioMethodsRedef = (double) t.overrideMethods / t.totalMethods;
+         t.rsmr = (double) (t.overrideMethods+t.overrideMethods) / t.totalMethods;
 
   
 		return t;
