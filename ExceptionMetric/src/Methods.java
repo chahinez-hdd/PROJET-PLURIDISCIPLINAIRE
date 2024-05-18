@@ -109,7 +109,14 @@ public class ExceptionStatus {
  
  
  
- 
+ static String ExceptionImport(String ExceptionName,File file) {
+	 for(ImportStatus Import : ImportStatus.ImportFetch(file)) {
+		 if(Import.ImportName.endsWith("."+ExceptionName)) {
+			 return Import.ImportName;
+		 }
+	 }
+	 return null;
+ }
  
  static int UpdateCheckedStatus(String ExceptionName, String ExceptionPath,File file) throws IOException {
 	   
