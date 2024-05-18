@@ -1,9 +1,6 @@
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Scanner;
 import TESTS.test2;
 
 
