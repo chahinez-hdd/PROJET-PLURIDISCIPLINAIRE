@@ -1,278 +1,265 @@
+
+
 import java.io.BufferedReader;
+
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.jar.JarInputStream;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
-public class Methods {
-	//fonction tedi fichier w te9rah w t3amer arraylist ta3 ExceptionInfo
-	//fonction tedi arraylist ta3 mo9bil w tbedel les flag 
-	static ArrayList<ExceptionInfo> fetchException (File fichier){
-		ArrayList<ExceptionInfo> list = new ArrayList<>();
+
+
+
+public class ExceptionStatus {
+ public String ExceptionName;
+ 
+ public int CheckedStatus;
+ public int DefaultStatus;
+ ExceptionStatus(String ExceptionName,int CheckedStatus,int DefaultStatus){
+	 this.ExceptionName = ExceptionName;
+	 this.CheckedStatus = CheckedStatus;
+	 this.DefaultStatus = DefaultStatus;
+	
+ }
+ 
+ static void IsThrowable(ArrayList<String> List,String line){
+	 if(RegularExpression.IsThrow(line)) {
+		 List.addAll(RegularExpression.ThrowException(line));
+	 }
+	 else if(RegularExpression.IsMethod(line)) {
+		 List.addAll(RegularExpression.FetchMethodThrowable(line));
+	 }
+	 else if(RegularExpression.IsCatch(line)) {
+		 List.addAll(RegularExpression.CatchException(line));
+	 }
+	 
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ static String IsSrcFile(String ExceptionName,File file) {
+	 // File file = new File(ProjectPath);
+	 //FilePath = FilePath.substring(0,FilePath.indexOf("/src")+4);
+	 File[] SrcFile = file.listFiles();
+	 for(File Files : SrcFile) {
+		 if( Files.isFile() && Files.getName().endsWith(".java")&& Files.getName().replace(".java", "").equals(ExceptionName)) {
 		
-		try (BufferedReader reader = new BufferedReader(new FileReader(fichier))){
-			
-			String line;
-			while ((line = reader.readLine())!= null) {
-				line =line.trim();
-				line=RemoveQoute(line);
-				if (!line.isEmpty() && !IsCommentOnlyCompleted(line)) {
-					if (ContainsComment(line)) {
-						line=RemoveComment(line);
-					}
-					else {
-						ArrayList<String> Code=new ArrayList<>();
-						if(FinishedComment(line)) {
-	            			if(!ContainsOpeningComment(line)) {
-	            				Code.add(CodeOpeningComment(line));
-	            			}
-	            			if(!ContainsClosingComment(line)) {
-	            				Code.add(CodeClosingComment(line));
-	            			}
-	            		}
-						else if (NotFinishedComment(line)) {
-	            			JumpComment(line,Code,reader);
-	            		}
-	            		if(!Code.isEmpty()) {
-	            			for(String x : Code) {
-	            				if(IsThrows(x)) {
-	            					list.add(new ExceptionInfo(ThrowsException(x),false,false));
-	            				}else if(IsThrow(x)) {
-	            					list.add(new ExceptionInfo(ThrowException(x),false,false));
-	            					
-	            				}else if(IsCatch(x)) {
-	            					list.add(new ExceptionInfo(CatchException(x),false,false));
+			 return Files.getAbsolutePath();
+		 }
+		 else if(Files.isDirectory() && Files.listFiles()!=null) {
+			 return IsSrcFile(ExceptionName,Files);
+			 
+		 }
+	 }
+	 return null;
+ }
+ 
+ static boolean IsClassException(String PathSrcFile) throws IOException, ClassNotFoundException {
+	 String PathBinFile = PathSrcFile.replace(".java", ".class");
+	 PathBinFile = PathBinFile.replace("/src/","/bin/");
+     // Create a custom class loader
+     URLClassLoader classLoader;
+	try {
+		classLoader = new URLClassLoader(new URL[]{new File(PathBinFile.substring(0,PathBinFile.indexOf("/bin")+4)).toURI().toURL()});
+	     Class<?> loadedClass = classLoader.loadClass(PathBinFile);
+
+	     // Now you have the loaded class and can work with it
+	     //System.out.println("Loaded class: " + loadedClass.getName());
+	     Class<?> superClass = loadedClass;
+	     // You can also get the superclass
+	     while (superClass != null) {
+             
+                	  if(superClass==Exception.class) {
+                		  return true;
+                	  }
+                	  else if(superClass==Error.class) {
+                		  return false;
+                	  }
+                	  superClass = superClass.getSuperclass();
+                      
+             // System.out.println("Superclass of " + loadedClass.getName() + ": " + superClass.getName());
+         }
+	     
+	     // Close the class loader when done
+	     classLoader.close();
+	} catch (MalformedURLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+     
+
+	 return false;
+ }
+ 
+ 
+ 
+ 
+ 
+ static int UpdateCheckedStatus(String ExceptionName, String ExceptionPath,File file) throws IOException {
+	   
+	 try {
+		 if(ExceptionName.equals("Exception")) {
+			 return 0;
+		 }
+		 
+	        if (IsSrcFile(ExceptionName,file) == null) { // Load using system class loader for JRE classes
+	            try {
+	                Class<?> loadedClass = Class.forName(ExceptionPath);
+	             //System.out.println(loadedClass.getName());
+	                
+	                    // Check the superclass of the loaded class
+	                    Class<?> superClass = loadedClass;
+	                    while (superClass != null) {
+	                    	
+	                       
+	                       // System.out.println(superClass.getName());
+	                       
+	                            if (superClass == RuntimeException.class) {
+	                                return 1;
+	                            } else if (superClass == Error.class) {
+	                                return -1;
+	                            }
+	                            else if(superClass == Exception.class) {
+	                            	return 0;
+	                            }
+	                            superClass = superClass.getSuperclass();
+	                        
+	                    }
+	                
+	            } catch (ClassNotFoundException e) {
+	                // Class not found by the system class loader
+	            }
+	        } else {
+	        	// Load using custom class loader for project classes
+	        	//System.out.println(ExceptionPath);
+	        	String name;
+	        	ExceptionPath = ExceptionPath.replace("\\src\\", "\\bin\\").replace(ExceptionName+".java","").replace("\\",".");
+	        	name = ExceptionPath.substring(ExceptionPath.indexOf("\\bin\\")+4).concat(ExceptionName);
+	        	//System.out.println(ExceptionPath);
+	 
+	           // System.out.println(ExceptionPath);
+	            URLClassLoader classLoader = new URLClassLoader(new URL[]{new File(ExceptionPath).toURI().toURL()});
+	            Class<?> loadedClass = classLoader.loadClass(ExceptionName);
+	            System.out.println(ExceptionPath);
+	           // System.out.println(ExceptionPath);
+	            System.out.println(loadedClass.getName());
+	            classLoader.close();
+
+	       
+	                // Check the superclass of the loaded class
+	                Class<?> superClass = loadedClass;
+	                while (superClass != null) {
+	                    
+	                    System.out.println(superClass.getName());
+	                        if (superClass == RuntimeException.class) {
+	                            return 1; // UnChecked exception
+	                        } else if (superClass == Error.class) {
+	                            return -1; // Error
+	                        }
+	                        else if(superClass == Exception.class) {
+	                        	return 0;
+	                        }
+	                        superClass = superClass.getSuperclass();
+	                    
+	                }
+	            
+	        }
+	    } catch (ClassNotFoundException | MalformedURLException e) {
+	        // Handle exceptions
+	        e.printStackTrace();
+	    }
+
+	    return 0; // Default
+	}
+
+  public static ArrayList<ExceptionStatus> FetchThrowable(File file,String ProjectPath) throws ClassNotFoundException, IOException{
+	  ArrayList<String> ThrowableList = new ArrayList<>();
+		String Line;
+		 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+	            while ((Line = reader.readLine() )!= null) {
+	            	Line = Line.trim();
+	            	Line = Qoute.RemoveQoute(Line);
+	            	ArrayList<String> ListCode=new ArrayList<>();
+	            	if(!Line.isBlank() && !Line.isEmpty() && !Comment.IsCommentOnlyCompleted(Line) && !RegularExpression.IsPackage(Line) && !RegularExpression.IsImport(Line)) {
+	            		//System.out.println(Line);
+	            		if(Comment.ContainsComment(Line)) {
+	    	            	//System.out.println(line);
+	    	            		Line = Comment.RemoveComment(Line);
+	    	            	}
+	            		else {
+	            			if(Comment.FinishedComment(Line)) {
+		            			if(!Comment.ContainsOpeningComment(Line)) {
+		            				ListCode.add(Comment.CodeOpeningComment(Line));
+		            			}
+		            			if(!Comment.ContainsClosingComment(Line)) {
+		            				ListCode.add(Comment.CodeClosingComment(Line));
+		            			}
+		            		}
+	            			else if (Comment.NotFinishedComment(Line)) {
+		            			Comment.JumpComment(Line,ListCode,reader);
+		            		}
+
+	            			if(!ListCode.isEmpty()) {
+	            				for(String code : ListCode) {
+	            					IsThrowable(ThrowableList,code);
 	            				}
-	            				
 	            			}
 	            		}
-					}
-					if(IsThrows(line)) {
-    					list.add(new ExceptionInfo(ThrowsException(line),false,false));
-    				}else if(IsThrow(line)) {
-    					list.add(new ExceptionInfo(ThrowException(line),false,false));
-    					
-    				}else if(IsCatch(line)) {
-    					list.add(new ExceptionInfo(CatchException(line),false,false));
-    				}
-					
-					for (ExceptionInfo exception :list) {
-						String tmp = exception.ExceptionName;
-						
-						while(!tmp.equals("Exception") && !tmp.equals("RuntimeException")) {
-							try {
-								Class<?> exceptionClass = Class.forName(exception.ExceptionName);
-								exceptionClass = exceptionClass.getSuperclass();
-								tmp = exceptionClass.getName();
-							}catch (ClassNotFoundException e) {
-								e.printStackTrace();
-							}
-						}
-						if (tmp.equals("Exception")) {
-							exception.checkedStatus = true;
-							
-						}else if (tmp.equals("RuntimeException")) {
-							exception.checkedStatus = false;
-						}
-					}
-    				
-					
-				}
-				
-			}
-		} catch (IOException e) {
-	
-			e.printStackTrace();
-		}
-				
-		return list;
-	}
-	static Boolean IsThrows(String Line) {
-		String line = Line;
-		line = line.replaceAll(" ","");
-		if(line.contains(")")) {
-		return line.substring(line.lastIndexOf(")")).contains("throws ");
+	            		if(ListCode.isEmpty()) {
+	            			IsThrowable(ThrowableList,Line);
+      	            	}
+	            			
+	            		}
+	            	}
+	            }
+	         catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		System.out.println(ThrowableList);
+	ArrayList<ExceptionStatus> ListException = new ArrayList<>();
+	File FileSrc = new File(ProjectPath);
+	for(String Exc : ThrowableList ) {
+		String ExceptionPath="";
+		int Flag = 0;
+		if(IsSrcFile(Exc,FileSrc )!=null) {
+     	 ExceptionPath = IsSrcFile(Exc, FileSrc); 
+     	 Flag = 1;
 		}
 		else {
-			return false;
-		}
-	}
-	static Boolean IsCatch(String Line) {
-		   String line = Line;
-		   line = line.replaceAll(" ","");
-			line = line.trim();
-			if(line.startsWith("}")) {
-				line = line.replaceAll("}","");
+			if(!Exc.equals("Exception")) {
+			 ExceptionPath = ExceptionImport(Exc,file);
 			}
-			return line.startsWith("catch");
-	   }
-	
-	static Boolean IsThrow(String Line) {
-		return Line.startsWith("throw ");
-	}
-	
-	static String ThrowsException(String Line) {
-		String line = Line.trim();
-		int BI = line.indexOf("throws")+6;
-		line = line.substring(BI);
-		line = line.trim();
-		line = line.replaceAll(" ", "");
-		int BS = 0;
-		if(line.contains("{")) {
-		 BS = line.indexOf("{");
-		 return line.substring(0,BS).replaceAll(" ", "");
-		}
-		else {
-			return line.replaceAll(" ", "");
-		}
-		
-	}
-	
-	static String ThrowException(String Line) {
-		String line = Line;
-		int BI = line.indexOf("new")+3;
-		line = line.substring(BI);
-		line = line.trim();
-		line = line.replaceAll(" ", "");
-		int BS = line.indexOf("(");
-		return line.substring(0,BS);
-	}
-	
-	static String CatchException(String Line) {
-		String line = Line;
-		int BI = line.indexOf("(")+1;
-		line = line.substring(BI);
-		line = line.trim();
-		int BS = line.indexOf(" ");
-		return line.substring(0,BS);
-	}
-	static boolean ContainsComment(String Line) {	
-		
-		 return Line.contains("//") ; 
-		
-	 }
-	 static boolean ContainsOpeningComment(String Line) {
-			return Line.startsWith("/*");
-		}
-	 static boolean ContainsClosingComment(String Line) {
-			String line = Line.replaceAll(" ", "");
-			return line.endsWith("*/");
-		}
-	 static String CodeOpeningComment(String Line) {
-			return Line.substring(0,Line.indexOf("/*"));
-		}
-	 static String CodeClosingComment(String Line) {
-			return Line.substring(Line.indexOf("*/")+2);
-		}
-	 
-	 
-	 static boolean FinishedComment(String Line) {
-		 Line = Line.trim();
-		return Line.contains("/*") && Line.contains("*/") ;	 
-	 }
-	static boolean NotFinishedComment(String Line) {
-		Line = Line.trim();
-		return Line.contains("/*") && !Line.contains("*/") ;
-	}
-	
-	static boolean IsCommentOnlyCompleted(String Line) {
-		Line = Line.trim();
-	    String singleLineCommentPattern = "//.*"; 
-	    String multiLineCommentPatternCompleted = "/\\*((?!(\\*/))[^\\n]|\\n)*(\\*/)";
-	return Line.matches(multiLineCommentPatternCompleted)||Line.matches(singleLineCommentPattern);
-	}
-	 static void JumpComment (String Line,ArrayList<String> List,BufferedReader reader) {
-			if(!ContainsOpeningComment(Line)) {
-				List.add(CodeOpeningComment(Line));
-			}
-			System.out.println(Line);
-			try {
-				while ((Line = reader.readLine()) != null) { 
-				Line = Line.trim();
-				Line=RemoveQoute(Line);
-				System.out.println(Line);
-				if(Line.contains("*/")) {
-					break;
-				}
-				}
-			}
-			catch(IOException e) {
-				
-			}
-			if(!ContainsClosingComment(Line)) {
-				List.add(CodeClosingComment(Line));
-			}
-		}
-	public static boolean isComment(String line, boolean insideMultiLineComment) {
-        // Removing leading and trailing white spaces for better detection
-        line = line.trim();
-        
-        // If we are already inside a multi-line comment
-        if (insideMultiLineComment) {
-            // Check if the multi-line comment ends on this line
-            if (line.endsWith("*/")) {
-                // We've reached the end of the multi-line comment
-                return true;
-            } else {
-                // The multi-line comment continues on the next line
-                return true; // Return true because we're still in a comment
-            }
-        }
-        
-        // Checking for single-line comment
-        if (line.startsWith("//")) {
-            return true;
-        }
-        
-        // Checking for multi-line comment
-        if (line.startsWith("/*")) {
-            // Check if the multi-line comment ends on the same line
-            if (line.endsWith("*/")) {
-                return true;
-            } else {
-                // Multi-line comment starts but doesn't end on the same line,
-                // so we set the flag to indicate we're inside a multi-line comment
-                return true;
-            }
-        }
+			// DefaultFlag = 0;
 
-        return false;
-    }
-	 
-	 static boolean IsQoute(String Line) {
-			Line = Line.trim();
-			return Line.contains("\"");
 		}
-	 
-	 static String RemoveQoute(String line) {
-		   	String qoute;
-		   	if(IsQoute(line)) {
-		   	while(line.contains("\"")) {
-		             
-		   		int BI = line.indexOf("\"");
-		   		 int BS = line.indexOf("\"",BI+1);
-		   		  if (BS == -1) {
-		   			  line = line.replace("\"", "");// Check if the closing quote was found
-		   	            break; // Exit the loop if not found to avoid StringIndexOutOfBoundsException
-		   	        }
-		   		  qoute = line.substring(BI,BS+1);
-		   		 line = line.replaceAll(Pattern.quote(qoute), "");
-		   		 
-		   		
-		   		
-		   							}
-		   				}
-		   	return line;
-		   	
-		   }
-	 static String RemoveComment(String line) {
-		 
-	     int index = line.indexOf("//");
-	     line = line.substring(0,index);
-		 
-			return line;
-	 } 
-	 
-
+     	int CheckedFlag = UpdateCheckedStatus(Exc, ExceptionPath,Flag);
+     	if(CheckedFlag!=-1 ) {
+     		int Default = 0;
+     
+     		if(!Exc.equals("Exception") && !isClassFromJRE(ExceptionPath)) {
+     			Default = 1;
+     		}
+     		ListException.add(new ExceptionStatus(Exc, CheckedFlag, Default));
+     	}
+     	
+	}
+	return ListException;
+	  
+  }
 }
