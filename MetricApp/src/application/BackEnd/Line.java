@@ -112,7 +112,7 @@ public class Line {
 	    String Line = "";
 	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	        while ((Line = reader.readLine()) != null) {
-	            System.out.println(Line);
+	 //           System.out.println(Line);
 	            Line = Line.trim();
 	            if (Line.isEmpty()) {
 	                ++NbLine; // Increment if the line is empty

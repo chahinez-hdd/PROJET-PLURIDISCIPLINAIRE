@@ -56,14 +56,16 @@ public class RegularExpression {
 	}
 	
 	
-    public static boolean IsClass(String Line) {
-    	String AcessModifiersPattern="(?:private\\s+|protected\\s+|public\\s+)?";
-    	String NonAcessModifiersPattern="(?:static\\s+|final\\s+|abstract\\s+)?";
-    	String ExtendsPettern="(?:\\s+extends\\s+\\b\\w+\\b)?";
-    	String ImplementsPattern="(?:\\s+implements\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*)?";
-    	String ClassPattern=AcessModifiersPattern+NonAcessModifiersPattern+"class\\s+\\w+"+ExtendsPettern+ImplementsPattern+"\\s*(?:\\{)?";
-    	return Line.matches(ClassPattern);
-    }
+	public static boolean IsClass(String Line) {
+	    String AccessModifiersPattern = "(?:private\\s+|protected\\s+|public\\s+)?";
+	    String NonAccessModifiersPattern = "(?:static\\s+|final\\s+|abstract\\s+)?";
+	    String ExtendsPattern = "(?:\\s+extends\\s+\\b\\w+\\b(?:\\s*<\\s*\\w+\\s*>\\s*)?)?";
+	    String ImplementsPattern = "(?:\\s+implements\\s+\\w+\\s*(\\s*,\\s*\\w+\\s*)*)?";
+	    String ClassPattern1 = (AccessModifiersPattern + NonAccessModifiersPattern)+ "class\\s+\\w+" + ExtendsPattern + ImplementsPattern + "\\s*(?:\\{\\s*)?";
+	    String ClassPattern2 = (NonAccessModifiersPattern + AccessModifiersPattern)+ "class\\s+\\w+" + ExtendsPattern + ImplementsPattern + "\\s*(?:\\{\\s*)?";
+	    
+	    return Line.matches(ClassPattern1)||Line.matches(ClassPattern2);
+	}
 	
 	static boolean IsAnnotation(String Line) {
 		return Line.startsWith("@") && !Line.equals("@Overload") && !Line.equals("@Override") ;

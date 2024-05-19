@@ -31,7 +31,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-public class CollaborationController {
+public class CollaborationController extends Thread {
 
 	 @FXML
 	    private TreeView<TreeItemData> treeView;

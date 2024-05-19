@@ -8,17 +8,19 @@ import java.util.ArrayList;
 public class SoftwareSizeMetrices {
     public ArrayList<String>MethodList=new ArrayList<>();
     public ArrayList<String>InterfaceList = new ArrayList<>();
+    public ArrayList<String>ClassList = new ArrayList<>();
     public String Parent="Object";
     
-    public static void FetchData(SoftwareSizeMetrices softwareSizeMetrices , String Line) {
+    public static void FetchData(SoftwareSizeMetrices softwareSizeMetrices , String Line , String fileName) {
     	if(RegularExpression.IsMethodPrototype(Line)) {
-				softwareSizeMetrices.MethodList.add(Line);
+				softwareSizeMetrices.MethodList.add(Line.replace("{", ""));
       	}
 			else if(RegularExpression.IsClass(Line)) {
+				softwareSizeMetrices.ClassList.add(Line.replace("{", ""));
 				if(Line.contains("implements ")){
 					softwareSizeMetrices.InterfaceList.addAll(RegularExpression.FetchImplements(Line));
 				}
-				 if(Line.contains("extends ")) {
+				 if(Line.contains("extends ") && Line.substring(0,Line.indexOf("extends ")).replace(" ", "").endsWith(fileName)) {
 					 softwareSizeMetrices.Parent = RegularExpression.FetchExtends(Line);
 				 }
     }
@@ -54,7 +56,7 @@ public class SoftwareSizeMetrices {
     	          			if(!ListCode.isEmpty()) {
     	          				for(String code : ListCode) {
     	          					if(RegularExpression.IsMethodPrototype(code) || RegularExpression.IsClass(code)) {
-    	          	                      FetchData(softwareSizeMetrices, code);
+    	          	                      FetchData(softwareSizeMetrices, code,file.getName().replace(".java", ""));
     	          	            	}
     	          					
     	          				}
@@ -62,7 +64,7 @@ public class SoftwareSizeMetrices {
     	          		}
     	          		if(ListCode.isEmpty()) {
     	          			if(RegularExpression.IsMethodPrototype(Line) || RegularExpression.IsClass(Line)) {
-    	          				FetchData(softwareSizeMetrices, Line);
+    	          				FetchData(softwareSizeMetrices, Line,file.getName().replace(".java",""));
     	  	            	}
     	          			
     	          			
