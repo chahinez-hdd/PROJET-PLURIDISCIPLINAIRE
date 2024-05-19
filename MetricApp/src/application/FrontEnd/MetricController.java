@@ -126,7 +126,7 @@ public class MetricController {
                     lineCodeButton.setOnAction(e -> {
                         // Handle "Line Code" button action
                         System.out.println("Line Code button clicked");
-                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Line.fxml"));
+                        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Analysis.fxml"));
                         Parent root = null;
 						try {
 							root = fxmlLoader.load();
@@ -134,10 +134,10 @@ public class MetricController {
 							// TODO Auto-generated catch block
 							exception.printStackTrace();
 						}
-                   	LineController lineController = fxmlLoader.getController();
-                       lineController.initialize(FilePath);
+                   	AnalysisController analysisController = fxmlLoader.getController();
+                       analysisController.initialize(FilePath);
                        Scene scene = new Scene(root);
-                       String css = this.getClass().getResource("/ressource/Css Folder/Line.css").toExternalForm();
+                       String css = this.getClass().getResource("/ressource/Css Folder/Analysis.css").toExternalForm();
                        scene.getStylesheets().add(css);
                        Stage stage = new Stage();
                        stage.setScene(scene);
