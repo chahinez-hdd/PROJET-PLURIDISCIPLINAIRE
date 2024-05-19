@@ -122,7 +122,7 @@ public class RegularExpression {
 			String CollectionPatterne="(<[\\s\\S]+?>|(\\[\\s*\\]\\s*){1,2})?";
 		    String PatterneNonAcessModifier="(?:static\\s+final\\s+|static\\s+|final\\s+|abstract\\s+)?";
 		    String ThrowsPattern = "(\\s*throws\\s+\\w+\\s*(\\s*\\,\\s*\\w+\\s*)*)?"; // Making the throws clause optional
-		    String MethodPattern = PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else)\\b\\w+\\b\\s*" + CollectionPatterne+ "(\\s*|\\s+)(?!if)\\b\\w+\\b\\s*\\([^()]*\\)\\s*" + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
+		    String MethodPattern = PattrneAcessModfiers + PatterneNonAcessModifier + "(?!else|return)\\b\\w+\\b\\s*" + CollectionPatterne+ "(\\s*|\\s+)(?!if)\\b\\w+\\b\\s*\\([^()]*\\)\\s*" + ThrowsPattern + "\\s*(;|\\{|\\{\\s*\\})?\\s*";
 		    return line.matches(MethodPattern); 
 		}
 	

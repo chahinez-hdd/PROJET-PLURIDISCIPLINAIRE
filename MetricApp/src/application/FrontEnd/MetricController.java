@@ -90,7 +90,7 @@ public class MetricController {
                  //   alert.getGraphic().getStyleClass().add("imageView");
                     alert.getButtonTypes().remove(ButtonType.OK); 
                     Button importsButton = new Button("ICM");
-                    Button lineCodeButton = new Button("JAX");
+                    Button AnalysisButton = new Button("JAX");
                     Button exceptionButton = new Button("JEA");
                     Button EncapsulationButton = new Button("TE");
                     Button SwingButton = new Button("SM");
@@ -123,7 +123,7 @@ public class MetricController {
                     
                     });
 
-                    lineCodeButton.setOnAction(e -> {
+                    AnalysisButton.setOnAction(e -> {
                         // Handle "Line Code" button action
                         System.out.println("Line Code button clicked");
                         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ressource/Fxml Folder/Analysis.fxml"));
@@ -225,7 +225,7 @@ public class MetricController {
                     });
 
                     // Create an HBox container for the buttons
-                    HBox buttonBox = new HBox(10, importsButton, lineCodeButton, exceptionButton,cancelButton,EncapsulationButton,SwingButton,PolymorphismeButon);
+                    HBox buttonBox = new HBox(10, importsButton, AnalysisButton, exceptionButton,cancelButton,EncapsulationButton,SwingButton,PolymorphismeButon);
                     buttonBox.setAlignment(Pos.CENTER); // Center the buttons horizontally within the HBox
 
                     // Add buttons to the dialog pane

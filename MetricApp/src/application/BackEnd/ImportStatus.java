@@ -150,7 +150,9 @@ public static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus>
           			}
           			}
           			else {
-       Java.classExists(Import.ImportName,ImportFile);
+        if (Java.classExists(Import.ImportName,ImportFile)) {
+        	Import.ImportStatus = 1;
+        }
           			}
           		}
           	}

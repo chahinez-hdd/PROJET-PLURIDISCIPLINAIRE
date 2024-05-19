@@ -63,9 +63,10 @@ public class Java {
 	}
 	
 	public static boolean classExists(String asterixImport, String className) {
-	    
+	    System.out.println("Class Exists");
+		System.out.println(asterixImport.replace("*","") + className);
         try {
-        	Class.forName(asterixImport.substring(0,asterixImport.lastIndexOf("*")) + className);
+        	 Class.forName(asterixImport.replace("*","") + className);
             return true; 
         } catch (ClassNotFoundException e) {
         	 return false;
