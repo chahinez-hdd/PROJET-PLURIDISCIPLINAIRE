@@ -4,7 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import application.FrontEnd.MetricController;
 
 public class ImportStatus {
 public String ImportName;
@@ -20,10 +28,62 @@ ImportStatus(String ImportName,int ImportStatus){
 //method fetch src class , jre class
 //method to see if conflict double wild card
 
+static boolean ConlictClassLoad(String AsterixImport , String ClassName) {
+String FilePath;
+	if(MetricController.PathProject.endsWith("\\")) {
+		FilePath =MetricController.PathProject+AsterixImport.replace(".", "\\").replace("*",""); 
+		}
+		else {
+			FilePath =MetricController.PathProject+"\\"+AsterixImport.replace(".", "\\").replace("*","");
+		}	
+	 Path path = Paths.get(FilePath);
+	  if(Files.exists(path)) {
+          return ConflictClassLoadPackageSrc(FilePath, ClassName);
+      } else {
+        return  ConflictClassLoadingPackageJre(AsterixImport, ClassName);
+      }
+}
+
+
+static boolean ConflictClassLoadingPackageJre(String AsterixImport , String ClassName) {
+	
+    try {
+    	 Class.forName(AsterixImport.replace("*","") + ClassName);
+        return true; 
+    } catch (ClassNotFoundException e) {
+    	 return false;
+        
+    }
+}
+
+static boolean ConflictClassLoadPackageSrc(String Path , String ClassName) {
+
+Path = Path.replace("\\src\\", "\\bin\\");
+String fileName = Path.substring(Path.indexOf("\\bin\\")+5).replace(".java", "").replace("\\", ".");
+Path = Path.replace("\\"+ClassName+".java","");
+
+URLClassLoader classLoader = null;
+try {
+	classLoader = new URLClassLoader(new URL[]{new File(Path).toURI().toURL()});
+} catch (MalformedURLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+	return false;
+} 
+try {
+	Class<?> loadedClass = classLoader.loadClass(fileName);
+	return true;
+} catch (ClassNotFoundException e) {
+	e.printStackTrace();
+	return true;
+	
+}
+}
+
 
 static boolean IsDoubleWildCardConflictImport(String ImportPackageName1,String ImportPackageName2,ArrayList<ImportStatus> ImportList) {
 	for(ImportStatus Import : ImportList) {
-		return (Java.classExists(ImportPackageName1, Import.ImportName) && Java.classExists(ImportPackageName2, Import.ImportName));
+		return (ConlictClassLoad(ImportPackageName1, Import.ImportName) && ConlictClassLoad(ImportPackageName2, Import.ImportName));
 	}
 	return false;
 }
@@ -34,10 +94,10 @@ static boolean IsClassImportConflict(String ImportPackageName1,String ImportPack
 	if(!ImportClassName1.equals("*") && !ImportClassName2.equals("*")&&ImportClassName2.equals(ImportClassName1)) {
 		return true;
 	}
-	else if(ImportClassName1.equals("*") && !ImportClassName2.equals("*")&&Java.classExists(ImportPackageName1, ImportClassName2)) {
+	else if(ImportClassName1.equals("*") && !ImportClassName2.equals("*")&&ConlictClassLoad(ImportPackageName1, ImportClassName2)) {
 		return true;
 	}
-	else if(!ImportClassName1.equals("*") && ImportClassName2.equals("*")&&Java.classExists(ImportPackageName2, ImportClassName1)) {
+	else if(!ImportClassName1.equals("*") && ImportClassName2.equals("*")&&ConlictClassLoad(ImportPackageName2, ImportClassName1)) {
 		return true;
 	}
 	else if(ImportClassName1.equals("*") && ImportClassName2.equals("*")) {
@@ -70,9 +130,9 @@ public static void UpdateConflictFlag(ArrayList<ImportStatus> ImportList) {
 
 static void IsAll(ArrayList<String> ListImportFromFile , String line) {
 	if(RegularExpression.IsMethodPrototype(line)) {
-		System.out.println(line);
+		
 		 RegularExpression.extractClassNamesMethod(line, ListImportFromFile);
-		  System.out.println(ListImportFromFile);
+		 
 	}
 	else if(RegularExpression.IsNew(line)) {
 		//System.out.println(line);
@@ -104,12 +164,13 @@ static void IsAll(ArrayList<String> ListImportFromFile , String line) {
 
 //Method To Update Flags Of ImportStatus(used , not used)
 public static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus> ImportList){
-	 	 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+	 ArrayList<String> ListImportFromFile = new ArrayList<String>(); 	 
+	try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
           String line;
           while ((line = reader.readLine()) != null) {
           line = line.trim();
           line =  Qoute.RemoveQoute(line);
-              ArrayList<String> ListImportFromFile = new ArrayList<String>();
+             
               ArrayList<String> ListCode=new ArrayList<String>();
               
               if(!line.isBlank() && !line.isEmpty() && !RegularExpression.IsBracket(line)&& !Comment.IsCommentOnlyCompleted(line) && !RegularExpression.IsImport(line) &&!RegularExpression.IsPackage(line)) {
@@ -141,7 +202,13 @@ public static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus>
           	if(ListCode.size()==0) {
           		IsAll(ListImportFromFile,line);
           	}
-          	for(ImportStatus Import : ImportList) {
+              }
+          }
+	}catch (IOException e) {
+              e.printStackTrace(); // Handle any IO exceptions
+          }
+    System.out.println(ListImportFromFile);      	
+	for(ImportStatus Import : ImportList) {
           		for(String ImportFile :  ListImportFromFile) {
           			if(!Import.ImportName.contains("*")) {
           			if(Import.ImportName.substring(Import.ImportName.lastIndexOf(".")+1).equals(ImportFile)) {
@@ -150,18 +217,15 @@ public static ArrayList<ImportStatus> update(File file , ArrayList<ImportStatus>
           			}
           			}
           			else {
-        if (Java.classExists(Import.ImportName,ImportFile)) {
+        if (ConlictClassLoad(Import.ImportName,ImportFile)) {
         	Import.ImportStatus = 1;
         }
           			}
           		}
           	}
-             }	               
+                            
               
-          }
-      } catch (IOException e) {
-          e.printStackTrace(); // Handle any IO exceptions
-      }
+      
 	 return ImportList;
 }
 
