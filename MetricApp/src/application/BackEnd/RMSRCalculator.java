@@ -20,7 +20,7 @@ public class RMSRCalculator {
     
 	public double RatioMethodsSur = 0;
 	public  double RatioMethodsRedef = 0;
-	public double rsmr = 0;
+	public double rmsr = 0;
     public static RMSRCalculator fetchRMSR(String path,String filename) throws FileNotFoundException, MalformedURLException, ClassNotFoundException  {
     	String fileName;
     	RMSRCalculator t = new RMSRCalculator();
@@ -38,7 +38,7 @@ public class RMSRCalculator {
         
          t.RatioMethodsSur = (double) t.overloadedMethods / t.totalMethods;
          t.RatioMethodsRedef = (double) t.overrideMethods / t.totalMethods;
-         t.rsmr = (double) (t.overrideMethods+t.overrideMethods) / t.totalMethods;
+         t.rmsr = (double) (t.overrideMethods+t.overrideMethods) / t.totalMethods;
 
   
 		return t;

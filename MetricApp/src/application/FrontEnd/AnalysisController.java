@@ -58,7 +58,7 @@ public class AnalysisController {
         
         
         SoftwareSizeMetrices softwareSizeMetrices = SoftwareSizeMetrices.FetchSoftware(file); 
-        String ParentSoftwareSvg="M 9.4 16.6 L 4.8 12 l 4.6 -4.6 L 8 6 l -6 6 l 6 6 l 1.4 -1.4 Z m 5.2 0 l 4.6 -4.6 l -4.6 -4.6 L 16 6 l 6 6 l -6 6 l -1.4 -1.4 Z";
+        String ParentSoftwareSvg="M 19 3 h -4.18 C 14.4 1.84 13.3 1 12 1 S 9.6 1.84 9.18 3 H 5 C 4.86 3 4.73 3.01 4.6 3.04 C 4.21 3.12 3.86 3.32 3.59 3.59 c -0.18 0.18 -0.33 0.4 -0.43 0.64 C 3.06 4.46 3 4.72 3 5 v 14 c 0 0.27 0.06 0.54 0.16 0.78 c 0.1 0.24 0.25 0.45 0.43 0.64 c 0.27 0.27 0.62 0.47 1.01 0.55 C 4.73 20.99 4.86 21 5 21 h 14 c 1.1 0 2 -0.9 2 -2 V 5 C 21 3.9 20.1 3 19 3 Z M 11 14.17 l -1.41 1.42 L 6 12 l 3.59 -3.59 L 11 9.83 L 8.83 12 L 11 14.17 Z M 12 4.25 c -0.41 0 -0.75 -0.34 -0.75 -0.75 S 11.59 2.75 12 2.75 s 0.75 0.34 0.75 0.75 S 12.41 4.25 12 4.25 Z M 14.41 15.59 L 13 14.17 L 15.17 12 L 13 9.83 l 1.41 -1.42 L 18 12 L 14.41 15.59 Z";
         String ParentSvg="M 16.5 12 c 1.38 0 2.49 -1.12 2.49 -2.5 S 17.88 7 16.5 7 C 15.12 7 14 8.12 14 9.5 s 1.12 2.5 2.5 2.5 Z M 9 11 c 1.66 0 2.99 -1.34 2.99 -3 S 10.66 5 9 5 C 7.34 5 6 6.34 6 8 s 1.34 3 3 3 Z m 7.5 3 c -1.83 0 -5.5 0.92 -5.5 2.75 V 19 h 11 v -2.25 c 0 -1.83 -3.67 -2.75 -5.5 -2.75 Z M 9 13 c -2.33 0 -7 1.17 -7 3.5 V 19 h 7 v -2.25 c 0 -0.85 0.33 -2.34 2.37 -3.47 C 10.5 13.1 9.66 13 9 13 Z";
         String NumberSvg="M 18 4 H 6 v 2 l 6.5 6 L 6 18 v 2 h 12 v -3 h -7 l 5 -5 l -5 -5 h 7 Z";
         String InterfaceSvg="M 19.14 12.94 c 0.04 -0.3 0.06 -0.61 0.06 -0.94 c 0 -0.32 -0.02 -0.64 -0.07 -0.94 l 2.03 -1.58 c 0.18 -0.14 0.23 -0.41 0.12 -0.61 l -1.92 -3.32 c -0.12 -0.22 -0.37 -0.29 -0.59 -0.22 l -2.39 0.96 c -0.5 -0.38 -1.03 -0.7 -1.62 -0.94 L 14.4 2.81 c -0.04 -0.24 -0.24 -0.41 -0.48 -0.41 h -3.84 c -0.24 0 -0.43 0.17 -0.47 0.41 L 9.25 5.35 C 8.66 5.59 8.12 5.92 7.63 6.29 L 5.24 5.33 c -0.22 -0.08 -0.47 0 -0.59 0.22 L 2.74 8.87 C 2.62 9.08 2.66 9.34 2.86 9.48 l 2.03 1.58 C 4.84 11.36 4.8 11.69 4.8 12 s 0.02 0.64 0.07 0.94 l -2.03 1.58 c -0.18 0.14 -0.23 0.41 -0.12 0.61 l 1.92 3.32 c 0.12 0.22 0.37 0.29 0.59 0.22 l 2.39 -0.96 c 0.5 0.38 1.03 0.7 1.62 0.94 l 0.36 2.54 c 0.05 0.24 0.24 0.41 0.48 0.41 h 3.84 c 0.24 0 0.44 -0.17 0.47 -0.41 l 0.36 -2.54 c 0.59 -0.24 1.13 -0.56 1.62 -0.94 l 2.39 0.96 c 0.22 0.08 0.47 0 0.59 -0.22 l 1.92 -3.32 c 0.12 -0.22 0.07 -0.47 -0.12 -0.61 L 19.14 12.94 Z M 12 15.6 c -1.98 0 -3.6 -1.62 -3.6 -3.6 s 1.62 -3.6 3.6 -3.6 s 3.6 1.62 3.6 3.6 S 13.98 15.6 12 15.6 Z";
@@ -138,15 +138,15 @@ public class AnalysisController {
         String PerformanceSvg="M 20.38 8.57 l -1.23 1.85 a 8 8 0 0 1 -0.22 7.58 H 5.07 A 8 8 0 0 1 15.58 6.85 l 1.85 -1.23 A 10 10 0 0 0 3.35 19 a 2 2 0 0 0 1.72 1 h 13.85 a 2 2 0 0 0 1.74 -1 a 10 10 0 0 0 -0.27 -10.44 Z m -9.79 6.84 a 2 2 0 0 0 2.83 0 l 5.66 -8.49 l -8.49 5.66 a 2 2 0 0 0 0 2.83 Z";
         String RunTimeSvg="M 11.99 2 C 6.47 2 2 6.48 2 12 s 4.47 10 9.99 10 C 17.52 22 22 17.52 22 12 S 17.52 2 11.99 2 Z M 12 20 c -4.42 0 -8 -3.58 -8 -8 s 3.58 -8 8 -8 s 8 3.58 8 8 s -3.58 8 -8 8 Z M 12.5 7 H 11 v 6 l 5.25 3.15 l 0.75 -1.23 l -4.5 -2.67 Z";
         String SizeSvg="M 21 6 H 3 c -1.1 0 -2 0.9 -2 2 v 8 c 0 1.1 0.9 2 2 2 h 18 c 1.1 0 2 -0.9 2 -2 V 8 c 0 -1.1 -0.9 -2 -2 -2 Z m 0 10 H 3 V 8 h 2 v 4 h 2 V 8 h 2 v 4 h 2 V 8 h 2 v 4 h 2 V 8 h 2 v 4 h 2 V 8 h 2 v 8 Z";
-        String ComplexitySvg="M 16 6 l 2.29 2.29 l -4.88 4.88 l -4 -4 L 2 16.59 L 3.41 18 l 6 -6 l 4 4 l 6.3 -6.29 L 22 12 V 6 Z";
+        //String ComplexitySvg="M 16 6 l 2.29 2.29 l -4.88 4.88 l -4 -4 L 2 16.59 L 3.41 18 l 6 -6 l 4 4 l 6.3 -6.29 L 22 12 V 6 Z";
         
         PerformanceMetric performanceMetric = new PerformanceMetric(Paths.get(FilePath));
         String formattedRuntime = String.format("%.5f",performanceMetric.RunTime);
-        Complexity compl = new Complexity(Complexity.FetchComplexity(file));
+        //Complexity compl = new Complexity(Complexity.FetchComplexity(file));
         TreeItem<TreeItemData> PerformanceParent = new TreeItem<>(new TreeItemData("Performance",PerformanceSvg));
         PerformanceParent.getChildren().add(new TreeItem<>(new TreeItemData("RuntTime In Seconds "+formattedRuntime,RunTimeSvg)));
         PerformanceParent.getChildren().add(new TreeItem<>(new TreeItemData("FileSize In Byte "+performanceMetric.FileSize,SizeSvg)));
-        PerformanceParent.getChildren().add(new TreeItem<>(new TreeItemData(compl.labelCom+" Complexity",ComplexitySvg)));
+       // PerformanceParent.getChildren().add(new TreeItem<>(new TreeItemData(compl.labelCom+" Complexity",ComplexitySvg)));
         
         
         rootItem.getChildren().add(ParentLineItem);

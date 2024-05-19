@@ -217,7 +217,7 @@ public class MetricController {
  				       RMRScontroller rmrsController = fxmlLoader.getController();
                         rmrsController.initialize(FilePath,selectedItem.getValue().GetLabel());
                         Scene scene = new Scene(root);
-                        String css = this.getClass().getResource("/ressource/Css Folder/application.css").toExternalForm();
+                        String css = this.getClass().getResource("/ressource/Css Folder/RMRS.css").toExternalForm();
                       scene.getStylesheets().add(css);
                         Stage stage = new Stage();
                         stage.setScene(scene);
