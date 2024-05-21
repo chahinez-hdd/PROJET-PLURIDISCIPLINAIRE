@@ -40,8 +40,8 @@ public class MVCinfosCalculator{
         Map<String, Set<String>> couplings = new HashMap<>();
 
         for (Class<?> cls : classes) {
-            String layer = getLayer(cls);
-            Set<String> dependencies = analyzeDependencies(cls);
+            String layer = getLayer(cls,t.loadedClassController,t.loadedClassView,t.loadedClassModel);
+            Set<String> dependencies = analyzeDependencies(cls,t);
             couplings.putIfAbsent(layer, new HashSet<>());
             couplings.get(layer).addAll(dependencies);
         }
@@ -53,35 +53,35 @@ public class MVCinfosCalculator{
         Method[] methodsConroller=DisplayMethods(loadedClassController);
 
         try {
-            analyzeDataFlow("C:\\Users\\user\\Documents\\vscode\\JAVA\\testsMetrics\\SecurityMetric\\src\\testMVC\\Controller.java");
+            analyzeDataFlow(filenameController);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        DataFlowVisitor visitor= analyzeDataFlow("C:\\Users\\user\\Documents\\vscode\\JAVA\\testsMetrics\\SecurityMetric\\src\\testMVC\\Controller.java");
+        DataFlowVisitor visitor= analyzeDataFlow(filenameController);
          t.dataFlowCount=visitor.dataFlowCount;
         
         return t;
         
     }
 
-    private static String getLayer(Class<?> cls) {
-        if (Model.class.isAssignableFrom(cls)) {
+    private static String getLayer(Class<?> cls,Class<?> Controller,Class<?> View,Class<?> Model) {
+        if (Model.isAssignableFrom(cls)) {
             return "MODEL";
-        } else if (View.class.isAssignableFrom(cls)) {
+        } else if (View.isAssignableFrom(cls)) {
             return "VIEW";
-        } else if (Controller.class.isAssignableFrom(cls)) {
+        } else if (Controller.isAssignableFrom(cls)) {
             return "CONTROLLER";
         }
         return "UNKNOWN";
     }
 
-    private static Set<String> analyzeDependencies(Class<?> cls) {
+    private static Set<String> analyzeDependencies(Class<?> cls, MVCinfosCalculator mvc) {
         Set<String> dependencies = new HashSet<>();
         Field[] fields = cls.getDeclaredFields();
 
         for (Field field : fields) {
             Class<?> fieldType = field.getType();
-            String dependencyLayer = getLayer(fieldType);
+            String dependencyLayer = getLayer(fieldType,mvc.loadedClassController,mvc.loadedClassView,mvc.loadedClassModel);
             if (!dependencyLayer.equals("UNKNOWN")) {
                 dependencies.add(dependencyLayer);
             }
